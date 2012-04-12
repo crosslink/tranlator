@@ -22,6 +22,8 @@ namespace QLINK {
 	const char *google_translator::LANGUAGE_PAIR_EN_CT = "en|zh-TW";
 	const char *google_translator::LANGUAGE_PAIR_EN_CS = "en|zh";
 
+	int google_translator::key_status =  google_translator::KEY_UNKNOWN;
+
 	google_translator::google_translator()
 	{
 
@@ -33,7 +35,13 @@ namespace QLINK {
 	}
 
 	void google_translator::load_key() {
+		if (key_status == KEY_UNKNOWN) {
 
+		}
+	}
+
+	bool google_translator::has_valid_key() {
+		return key_status == KEY_VALID;
 	}
 
 	std::string google_translator::translate(const char *text, const char *language_pair)

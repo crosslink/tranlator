@@ -20,8 +20,15 @@ namespace QLINK {
 		static const char *LANGUAGE_PAIR_EN_CS;
 		static const char *LANGUAGE_PAIR_EN_CT;
 
+		static const int KEY_UNKNOWN = 0;
+		static const int KEY_INVALID = -1;
+		static const int KEY_VALID = 99;
+		static const int KEY_LOADED = 1;
+
+
 	private:
-		std::string api_key;
+		static std::string api_key;
+		static int key_status;
 
 	public:
 		google_translator();
@@ -30,7 +37,8 @@ namespace QLINK {
 		std::string translate(const char *text, const char *language_pair);
 
 	private:
-		void load_key();
+		static void load_key();
+		static bool has_valid_key();
 
 		std::string get_translation(const char *content);
 
