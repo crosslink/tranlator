@@ -1,4 +1,4 @@
-AM_CPPFLAGS = -std=c++0x  -pedantic -I $(srcdir)/include
+AM_CPPFLAGS = -std=c++0x  -pedantic -I $(srcdir)/include -I/home/monfee/workspace/stpl
 AM_LDFLAGS = @LIBS@
 #LIB_UNISEG = @LIB_UNISEG@
 
@@ -20,6 +20,7 @@ corpus_translator_SOURCES = \
 	$(SOURCE_DIR)/webpage_retriever.cpp \
 	$(SOURCE_DIR)/corpus_translator.cpp
 corpus_translator_LDADD = -lpthread -lcurl 
+corpus_translator_CFLAGS = $(AM_CFLAGS) $(AM_CXXFLAGS) 
 
 google_translate_SOURCES = $(TEST_DIR)/google_translate.cpp
 google_translate_LDADD = -lpthread -lcurl 
