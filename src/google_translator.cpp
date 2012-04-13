@@ -8,8 +8,11 @@
 #include "google_translator.h"
 #include "webpage_retriever.h"
 #include "string_utils.h"
+#include "sys_file.h"
 
 #include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #include <stpl/stpl_parser.h>
 #include <stpl/stpl_property.h>
@@ -18,9 +21,15 @@ using namespace std;
 
 namespace QLINK {
 //	const char *google_translator::GOOGLE_TRANSLATE_URL_TEMPLATE = "http://translate.google.com/?oe=utf8"; //&langpair=en|zh&text=dahuangshan
-	const char *google_translator::GOOGLE_TRANSLATE_URL_TEMPLATE = "https://www.googleapis.com/language/translate/v2?key=AIzaSyBxo3WlH-z_Gw0M_c_VQu_Ka7VHb7NtKrs";
+	const char *google_translator::GOOGLE_TRANSLATE_URL_TEMPLATE = "https://www.googleapis.com/language/translate/v2?key=%s";
 	const char *google_translator::LANGUAGE_PAIR_EN_CT = "en|zh-TW";
-	const char *google_translator::LANGUAGE_PAIR_EN_CS = "en|zh";
+	const char *google_translator::LANGUAGE_PAIR_EN_CS = "en|zh-CN";
+
+	const char *google_translator::TEST_STRING_EN = "I";
+	const char *google_translator::TEST_STRING_EN = "\346\210\221"; // chinese character for "I"
+
+
+	const char *google_translator::GOOGLE_TRANSLATE_API_KEY_FILE = "key.txt";
 
 	int google_translator::key_status =  google_translator::KEY_UNKNOWN;
 
@@ -34,10 +43,32 @@ namespace QLINK {
 
 	}
 
+
+
 	void google_translator::load_key() {
 		if (key_status == KEY_UNKNOWN) {
-
+			const char *key_text = sys_file::read_entire_file(GOOGLE_TRANSLATE_API_KEY_FILE);
+			if (key_text == NULL) {
+				api_key = key_text;
+				if (test_key())
+					key_status = KEY_VALID;
+				else
+					key_status = KEY_INVALID;
+			}
+			else
+				key_status = KEY_INVALID;
 		}
+
+		if (key_status != KEY_VALID) {
+			std::cerr << "Invalid Google Translate API key: " << api_key << std::endl;
+			exit(-1);
+		}
+	}
+
+	bool google_translator::test_key() {
+		query_template = sprintf((char *)GOOGLE_TRANSLATE_URL_TEMPLATE, api_key.c_str());
+		string result =
+		return false;
 	}
 
 	bool google_translator::has_valid_key() {
@@ -46,7 +77,7 @@ namespace QLINK {
 
 	std::string google_translator::translate(const char *text, const char *language_pair)
 	{
-		string url(GOOGLE_TRANSLATE_URL_TEMPLATE);
+		string url(query_template);
 //		append_lp(url, language_pair);
 //		append_text(url, text);
 		add_text_option(url, text);
