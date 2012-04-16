@@ -25,5 +25,11 @@ corpus_translator_SOURCES = \
 corpus_translator_LDADD = -lpthread -lcurl 
 corpus_translator_CFLAGS = $(AM_CFLAGS) $(AM_CXXFLAGS) 
 
-google_translate_SOURCES = $(TEST_DIR)/google_translate.cpp
+google_translate_SOURCES = \
+	$(SOURCE_DIR)/sys_file.cpp \
+	$(SOURCE_DIR)/google_translator.cpp \
+	$(SOURCE_DIR)/webpage_retriever.cpp \
+	$(TEST_DIR)/google_translate.cpp
+						
 google_translate_LDADD = -lpthread -lcurl 
+google_translate_CFLAGS = $(AM_CFLAGS) $(AM_CXXFLAGS)

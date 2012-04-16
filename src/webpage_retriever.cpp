@@ -7,7 +7,7 @@
 
 #include "webpage_retriever.h"
 
-namespace QLINK {
+//namespace QLINK {
 	static void *myrealloc(void *ptr, size_t size);
 
 	static void *myrealloc(void *ptr, size_t size)
@@ -99,4 +99,4 @@ namespace QLINK {
 	  return chunk.memory;
 	}
 
-}
+//}

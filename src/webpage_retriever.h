@@ -18,7 +18,7 @@
 
 #include "pattern_singleton.h"
 
-namespace QLINK {
+//namespace QLINK {
 	struct MemoryStruct {
 	  char *memory;
 	  size_t size;
@@ -41,6 +41,6 @@ namespace QLINK {
 		void free_chunk();
 	};
 
-}
+//}
 
 #endif /* WEBPAGE_RETRIEVER_H_ */

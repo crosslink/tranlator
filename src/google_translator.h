@@ -11,7 +11,7 @@
 #include <string>
 #include "pattern_singleton.h"
 
-namespace QLINK {
+//namespace QLINK {
 
 	class google_translator : public pattern_singleton<google_translator>
 	{
@@ -25,10 +25,10 @@ namespace QLINK {
 
 		static const char *GOOGLE_TRANSLATE_API_KEY_FILE;
 
-		static const int KEY_UNKNOWN = 0;
-		static const int KEY_INVALID = -1;
-		static const int KEY_VALID = 99;
-		static const int KEY_LOADED = 1;
+		static const int KEY_UNKNOWN = -1;
+		static const int KEY_INVALID = 99;
+		static const int KEY_VALID = 1;
+		static const int KEY_LOADED = 0;
 
 
 	private:
@@ -44,8 +44,8 @@ namespace QLINK {
 		std::string translate(const char *text, const char *language_pair);
 
 	private:
-		static void load_key();
-		static bool test_key();
+		void load_key();
+		bool test_key();
 		static bool has_valid_key();
 
 		std::string get_translation(const char *content);
@@ -57,6 +57,6 @@ namespace QLINK {
 		void add_text_option(std::string& url, const char *text);
 	};
 
-}
+//}
 
 #endif /* GOOGLE_TRANSLATOR_H_ */
