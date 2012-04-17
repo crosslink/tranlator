@@ -48,7 +48,9 @@
 		std::string translate(const char *text, const char *language_pair);
 		static bool has_valid_key();
 
-		static std::string get_translation(const char *content);
+		virtual std::string get_translation(const char *content);
+
+		google_translator& get_instance();
 
 	protected:
 
@@ -59,8 +61,9 @@
 		void add_text_option(std::string& url, const char *text);
 
 //	private:
+		void init();
 		void init_once();
-		void set_key();
+		virtual void set_key();
 		bool test_key();
 	};
 

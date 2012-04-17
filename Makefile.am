@@ -39,6 +39,7 @@ corpus_translator_DEPENDENCIES = libgoogle_translate.la
 google_translate_SOURCES = $(TEST_DIR)/google_translate.cpp
 google_translate_LDADD = -lpthread -lcurl -lgoogle_translate
 google_translate_DEPENDENCIES = libgoogle_translate.la
+google_translate_LDFLAGS = -static
 
 test_parse_translation_SOURCES = $(TEST_DIR)/test_parse_translation.cpp
 test_parse_translation_LDADD = -lgoogle_translate

@@ -104,6 +104,7 @@
 	void webpage_retriever::add_header(const char *header) {
 		//headers = curl_slist_append(headers, "Content-Type: text/xml");
 		headers = curl_slist_append(headers, header);
+		curl_easy_setopt(curl_handle, CURLOPT_HTTPHEADER, headers);
 	}
 
 //}

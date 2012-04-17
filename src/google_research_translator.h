@@ -21,13 +21,15 @@ public:
 	google_research_translator();
 	virtual ~google_research_translator();
 
-	static std::string get_translation(const char *content);
+	virtual std::string get_translation(const char *content);
+
+	static google_research_translator& get_instance();
 
 protected:
 //private:
-//	static void init();
+	void init();
 //	static void set_key();
-	bool set_key();
+	virtual void set_key();
 
 };
 

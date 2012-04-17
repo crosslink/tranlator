@@ -19,7 +19,7 @@ int main(int argc, char **argv) {
 		exit(-1);
 	}
 	const char *content = sys_file::read_entire_file(argv[1]);
-	string trans = google_research_translator::get_translation(content);
+	string trans = google_research_translator().get_translation(content);
 	cout << "Translation: " << trans << endl;
 	return 0;
 }

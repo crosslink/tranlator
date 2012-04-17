@@ -20,12 +20,7 @@ const char *google_research_translator::GOOGLE_TRANSLATE_RESEARCH_API_KEY_FILE =
 const char *google_research_translator::GOOGLE_TRANSLATE_RESEARCH_AUTH_HEADER = "Authorization: GoogleLogin auth=";
 
 google_research_translator::google_research_translator() {
-	if (key_status <= KEY_UNKNOWN) {
-		api_key_file = "GOOGLE_TRANSLATE_RESEARCH_API_KEY_FILE";
-		source_lang_var = "sl";
-		target_lang_var = "tl";
-		set_key();
-	}
+
 }
 
 google_research_translator::~google_research_translator() {
@@ -33,14 +28,26 @@ google_research_translator::~google_research_translator() {
 }
 
 
-//void google_research_translator::set_key()
-//{
-//
-//}
-//
-//
-//
-bool google_research_translator::set_key()
+google_research_translator& google_research_translator::get_instance()
+{
+	static google_research_translator instance;
+	instance.init();
+	return instance;
+}
+
+void google_research_translator::init()
+{
+	if (key_status <= KEY_UNKNOWN) {
+		api_key_file = GOOGLE_TRANSLATE_RESEARCH_API_KEY_FILE;
+		source_lang_var = "sl";
+		target_lang_var = "tl";
+		init_once();
+	}
+}
+
+
+
+void google_research_translator::set_key()
 {
 //	int len = api_key.length() + strlen(GOOGLE_TRANSLATE_RESEARCH_AUTH_HEADER);
 //	char temp = new char[len + 1];

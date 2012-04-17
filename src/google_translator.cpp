@@ -39,12 +39,7 @@ int google_translator::key_status =  google_translator::KEY_UNKNOWN;
 
 google_translator::google_translator()
 {
-	if (key_status <= KEY_UNKNOWN) {
-		api_key_file = GOOGLE_TRANSLATE_API_KEY_FILE;
-		source_lang_var = "source";
-		target_lang_var = "target";
-		init_once();
-	}
+
 }
 
 google_translator::~google_translator()
@@ -75,7 +70,7 @@ void google_translator::init_once() {
 		std::cerr << "Invalid Google Translate API key: " << api_key << std::endl;
 		exit(-1);
 	case KEY_VALID:
-		std::cerr << "Google Translate API key: " << api_key << "has been verified. " << std::endl;
+		std::cerr << "Google Translate API key: " << api_key << endl << " has been successfully verified. " << std::endl;
 		break;
 	}
 }
@@ -89,11 +84,28 @@ void google_translator::set_key()
 	query_template = buf;
 }
 
+google_translator & google_translator::get_instance()
+{
+	static google_translator instance;
+	instance.init();
+	return instance;
+}
+
+void google_translator::init()
+{
+	if (key_status <= KEY_UNKNOWN) {
+		api_key_file = GOOGLE_TRANSLATE_API_KEY_FILE;
+		source_lang_var = "source";
+		target_lang_var = "target";
+		init_once();
+	}
+}
+
 bool google_translator::test_key() {
-	set_key();
+	this->set_key();
 
 	string result = translate(TEST_STRING_EN, LANGUAGE_PAIR_EN_CS);
-	return result == TEST_STRING_EN;
+	return result == TEST_STRING_ZH;
 }
 
 bool google_translator::has_valid_key() {
