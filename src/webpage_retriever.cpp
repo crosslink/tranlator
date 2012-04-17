@@ -37,6 +37,8 @@
 
 	webpage_retriever::webpage_retriever()
 	{
+		headers = NULL;
+
 		  chunk.memory=NULL; /* we expect realloc(NULL, size) to work */
 		  chunk.size = 0;    /* no data at this point */
 
@@ -53,7 +55,7 @@
 
 		  /* some servers don't like requests that are made without a user-agent
 			 field, so we provide one */
-		  curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, "firefox/3.5.1");
+		  curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, "CROSSLINK/1.0 (http://ntcir.nii.ac.jp/CrossLink/)");
 	}
 
 	webpage_retriever::~webpage_retriever()
@@ -97,6 +99,11 @@
 	   * you're done with it, you should free() it as a nice application.
 	   */
 	  return chunk.memory;
+	}
+
+	void webpage_retriever::add_header(const char *header) {
+		//headers = curl_slist_append(headers, "Content-Type: text/xml");
+		headers = curl_slist_append(headers, header);
 	}
 
 //}

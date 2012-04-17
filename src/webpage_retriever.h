@@ -28,7 +28,7 @@
 	{
 	private:
 		  CURL *curl_handle;
-
+		  struct curl_slist *headers;
 		  struct MemoryStruct chunk;
 
 	public:
@@ -36,6 +36,7 @@
 		virtual ~webpage_retriever();
 
 		char *retrieve(const char *url);
+		void add_header(const char *header);
 
 	private:
 		void free_chunk();

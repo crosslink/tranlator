@@ -29,6 +29,9 @@ const char *google_translator::TEST_STRING_ZH = "\346\210\221"; // chinese chara
 
 std::string google_translator::api_key("");
 std::string google_translator::query_template("");
+std::string google_translator::api_key_file("");
+std::string google_translator::source_lang_var("");
+std::string google_translator::target_lang_var("");
 
 const char *google_translator::GOOGLE_TRANSLATE_API_KEY_FILE = "key.txt";
 
@@ -36,8 +39,12 @@ int google_translator::key_status =  google_translator::KEY_UNKNOWN;
 
 google_translator::google_translator()
 {
-	if (key_status <= KEY_UNKNOWN)
+	if (key_status <= KEY_UNKNOWN) {
+		api_key_file = GOOGLE_TRANSLATE_API_KEY_FILE;
+		source_lang_var = "source";
+		target_lang_var = "target";
 		load_key();
+	}
 }
 
 google_translator::~google_translator()
@@ -45,11 +52,9 @@ google_translator::~google_translator()
 
 }
 
-
-
 void google_translator::load_key() {
 	if (key_status == KEY_UNKNOWN) {
-		const char *key_text = sys_file::read_entire_file(GOOGLE_TRANSLATE_API_KEY_FILE);
+		const char *key_text = sys_file::read_entire_file(api_key_file.c_str());
 		if (key_text != NULL) {
 			api_key = key_text;
 			if (test_key())
@@ -184,9 +189,13 @@ void google_translator::add_lang_options(std::string& url,const char *language_p
 	const char *pos = strchr(language_pair, '|');
 	string source_lang(language_pair, pos);
 	string target_lang(pos + 1);
-	url.append("&source=");
+	url.append("&");
+	url.append(source_lang_var);
+	url.append("=");
 	url.append(source_lang);
-	url.append("&target=");
+	url.append("&");
+	url.append(target_lang_var);
+	url.append("=");
 	url.append(target_lang);
 }
 

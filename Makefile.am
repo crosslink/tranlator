@@ -19,6 +19,7 @@ corpus_translator_SOURCES = \
 	$(SOURCE_DIR)/sys_file.cpp \
 	$(SOURCE_DIR)/sys_files.cpp \
 	$(SOURCE_DIR)/google_translator.cpp \
+	$(SOURCE_DIR)/google_research_translator.cpp \
 	$(SOURCE_DIR)/webpage_retriever.cpp \
 	$(SOURCE_DIR)/corpus_translator.cpp
 	
@@ -28,6 +29,7 @@ corpus_translator_CFLAGS = $(AM_CFLAGS) $(AM_CXXFLAGS)
 google_translate_SOURCES = \
 	$(SOURCE_DIR)/sys_file.cpp \
 	$(SOURCE_DIR)/google_translator.cpp \
+	$(SOURCE_DIR)/google_research_translator.cpp \
 	$(SOURCE_DIR)/webpage_retriever.cpp \
 	$(TEST_DIR)/google_translate.cpp
 						

@@ -31,23 +31,24 @@
 		static const int KEY_LOADED = 0;
 
 
-	private:
+	protected:
 		static std::string api_key;
 		static int key_status;
+		static std::string api_key_file;
 
 		static std::string query_template;
+
+		static std::string source_lang_var;
+		static std::string target_lang_var;
 
 	public:
 		google_translator();
 		virtual ~google_translator();
 
 		std::string translate(const char *text, const char *language_pair);
-
-	private:
-		void load_key();
-		bool test_key();
 		static bool has_valid_key();
 
+	protected:
 		std::string get_translation(const char *content);
 
 		void append_text(std::string& url, const char *text);
@@ -55,6 +56,11 @@
 
 		void add_lang_options(std::string& url, const char *language_pair);
 		void add_text_option(std::string& url, const char *text);
+
+//	private:
+//		static void init();
+		void load_key();
+		bool test_key();
 	};
 
 //}
