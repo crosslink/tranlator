@@ -15,14 +15,17 @@ public:
 	static const char *GOOGLE_TRANSLATE_RESEARCH_URL_TEMPLATE;
 	static const char *GOOGLE_TRANSLATE_RESEARCH_API_KEY_FILE;
 
+	static const char *GOOGLE_TRANSLATE_RESEARCH_AUTH_HEADER;
+
 public:
 	google_research_translator();
 	virtual ~google_research_translator();
 
+protected:
 //private:
 //	static void init();
-//	static void load_key();
-//	static bool test_key();
+//	static void set_key();
+	bool set_key();
 };
 
 #endif /* GOOGLER_ESEARCH_TRANSLATOR_H_ */

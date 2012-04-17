@@ -43,7 +43,7 @@ google_translator::google_translator()
 		api_key_file = GOOGLE_TRANSLATE_API_KEY_FILE;
 		source_lang_var = "source";
 		target_lang_var = "target";
-		load_key();
+		init_once();
 	}
 }
 
@@ -52,7 +52,7 @@ google_translator::~google_translator()
 
 }
 
-void google_translator::load_key() {
+void google_translator::init_once() {
 	if (key_status == KEY_UNKNOWN) {
 		const char *key_text = sys_file::read_entire_file(api_key_file.c_str());
 		if (key_text != NULL) {
@@ -80,12 +80,18 @@ void google_translator::load_key() {
 	}
 }
 
-bool google_translator::test_key() {
+void google_translator::set_key()
+{
 	char buf[1024];
 	int len = api_key.length() + strlen(GOOGLE_TRANSLATE_URL_TEMPLATE);
 	sprintf(buf, (char *)GOOGLE_TRANSLATE_URL_TEMPLATE, api_key.c_str());
 	buf[len] = '\0';
 	query_template = buf;
+}
+
+bool google_translator::test_key() {
+	set_key();
+
 	string result = translate(TEST_STRING_EN, LANGUAGE_PAIR_EN_CS);
 	return result == TEST_STRING_EN;
 }

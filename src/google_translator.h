@@ -58,8 +58,8 @@
 		void add_text_option(std::string& url, const char *text);
 
 //	private:
-//		static void init();
-		void load_key();
+		void init_once();
+		void set_key();
 		bool test_key();
 	};
 
