@@ -52,5 +52,35 @@ bool google_research_translator::set_key()
 //	delete temp;
 }
 
+std::string google_research_translator::get_translation(const char *content)
+{
+	const char *start, *end;
+	int len = strlen(content);
+
+	static const char *TEXTAREA_TAG = "<gt:translation";
+	string gtrans;
+
+	start = strstr(content, TEXTAREA_TAG);
+	if (start != NULL) {
+		start += strlen(TEXTAREA_TAG);
+		start = strchr(start, '>');
+
+		if (start != NULL && (start - content) < len) {
+//			start = strchr(start, ':');
+//
+//			start = strchr(start, '"');
+			++start;
+			end = strchr(start, '"');
+			if (end != NULL && (end - content) < len) {
+//				end =  strchr(start, '"');
+				gtrans = string(start, end);
+			}
+		}
+	}
+	return gtrans;
+}
+
+
+
 
 

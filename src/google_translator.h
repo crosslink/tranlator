@@ -48,8 +48,9 @@
 		std::string translate(const char *text, const char *language_pair);
 		static bool has_valid_key();
 
+		static std::string get_translation(const char *content);
+
 	protected:
-		std::string get_translation(const char *content);
 
 		void append_text(std::string& url, const char *text);
 		void append_lp(std::string& url, const char *language_pair);

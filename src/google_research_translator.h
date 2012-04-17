@@ -21,11 +21,14 @@ public:
 	google_research_translator();
 	virtual ~google_research_translator();
 
+	static std::string get_translation(const char *content);
+
 protected:
 //private:
 //	static void init();
 //	static void set_key();
 	bool set_key();
+
 };
 
 #endif /* GOOGLER_ESEARCH_TRANSLATOR_H_ */
