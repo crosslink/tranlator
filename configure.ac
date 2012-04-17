@@ -6,6 +6,8 @@ AC_INIT([corpus-translator], [0.1], [lingxiang.tang@gmailc.om])
 AC_CONFIG_SRCDIR([src/thread_master.h])
 #AC_CONFIG_HEADERS([config.h])
 
+LT_INIT
+
 AM_INIT_AUTOMAKE
 
 # Checks for programs.
