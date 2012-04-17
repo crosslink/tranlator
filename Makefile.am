@@ -43,4 +43,4 @@ google_translate_DEPENDENCIES = libgoogle_translate.la
 test_parse_translation_SOURCES = $(TEST_DIR)/test_parse_translation.cpp
 test_parse_translation_LDADD = -lgoogle_translate
 test_parse_translation_DEPENDENCIES = libgoogle_translate.la
-
+test_parse_translation_LDFLAGS = -static

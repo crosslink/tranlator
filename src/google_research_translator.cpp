@@ -57,23 +57,27 @@ std::string google_research_translator::get_translation(const char *content)
 	const char *start, *end;
 	int len = strlen(content);
 
-	static const char *TEXTAREA_TAG = "<gt:translation";
+	static const char *ENTRY_TAG = "<entry>";
+	static const char *TRANSLATION_TAG = "<gt:translation";
 	string gtrans;
 
-	start = strstr(content, TEXTAREA_TAG);
+	start = strstr(content, ENTRY_TAG);
 	if (start != NULL) {
-		start += strlen(TEXTAREA_TAG);
-		start = strchr(start, '>');
+		start = strstr(start, TRANSLATION_TAG);
+		if (start != NULL) {
+			start += strlen(TRANSLATION_TAG);
+			start = strchr(start, '>');
 
-		if (start != NULL && (start - content) < len) {
-//			start = strchr(start, ':');
-//
-//			start = strchr(start, '"');
-			++start;
-			end = strchr(start, '"');
-			if (end != NULL && (end - content) < len) {
-//				end =  strchr(start, '"');
-				gtrans = string(start, end);
+			if (start != NULL && (start - content) < len) {
+	//			start = strchr(start, ':');
+	//
+	//			start = strchr(start, '"');
+				++start;
+				end = strchr(start, '<');
+				if (end != NULL && (end - content) < len) {
+	//				end =  strchr(start, '"');
+					gtrans = string(start, end);
+				}
 			}
 		}
 	}
