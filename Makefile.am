@@ -1,5 +1,5 @@
 AM_CPPFLAGS = -std=c++0x  -pedantic -I $(srcdir)/include -I/home/monfee/workspace/stpl
-AM_LDFLAGS = @LIBS@
+AM_LDFLAGS = @LIBS@ -L/usr/lib64/mysql @MYSQL_LIBS@
 #LIB_UNISEG = @LIB_UNISEG@
 
 SOURCE_DIR = src

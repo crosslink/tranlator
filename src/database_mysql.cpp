@@ -64,7 +64,9 @@ int database_mysql::connect() {
 
 void database_mysql::init() {
 	server = "localhost";
-
+	database = "google_translate_info";
+	user = "gt";
+	password = "gtproject";
 }
 
 
