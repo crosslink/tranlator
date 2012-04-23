@@ -27,6 +27,8 @@ public:
 
 	int connect();
 
+	void execute_query(std::string);
+
 private:
 	void init();
 

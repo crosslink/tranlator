@@ -27,7 +27,7 @@ libgoogle_translate_la_SOURCES = $(libgoogle_translate_sources)
 libgoogle_translate_la_LIBADD = -lpthread -lcurl 
 libgoogle_translate_la_LIBFLAGS = 
 		
-test_PROGRAMES = test_parse_translation		
+test_PROGRAMES = test_parse_translation	test_database	
 		
 noinst_PROGRAMS = corpus_translator google_translate $(test_PROGRAMES)
 
@@ -46,3 +46,8 @@ test_parse_translation_SOURCES = $(TEST_DIR)/test_parse_translation.cpp
 test_parse_translation_LDADD = -lgoogle_translate
 test_parse_translation_DEPENDENCIES = libgoogle_translate.la
 test_parse_translation_LDFLAGS = -static
+
+test_database_SOURCES = $(TEST_DIR)/test_database.cpp
+test_database_LDADD = -lgoogle_translate
+test_database_DEPENDENCIES = libgoogle_translate.la
+test_database_LDFLAGS = -static
