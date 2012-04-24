@@ -14,7 +14,7 @@
 class input_manager {
 private:
 	std::string input;
-	std::string out_path;
+	static std::string out_path;
 
 	static google_research_translator& translator;
 

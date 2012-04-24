@@ -8,6 +8,7 @@
 #include "input_manager.h"
 #include "corpus.h"
 #include "article_reader.h"
+#include "article_writer.h"
 
 #include <string.h>
 
@@ -16,6 +17,7 @@
 using namespace std;
 
 google_research_translator& input_manager::translator = google_research_translator::get_instance();
+std::string input_manager::out_path = ".";
 
 input_manager::input_manager() {
 	init();
@@ -36,7 +38,7 @@ void input_manager::set_out_path(std::string out_path) {
 
 void input_manager::init() {
 	disk = NULL;
-	out_path = ".";
+
 }
 
 void input_manager::cleanup() {
@@ -61,24 +63,17 @@ void input_manager::load(const char* filename) {
 //	{
 }
 
-/*
- * process xml file by each element
- */
-std::string input_manager::next_text() {
-
-	return "";
-}
-
 void input_manager::translate() {
 	const char *file = disk->first();
 	while (file != NULL && strlen(file) > 0) {
 		article_reader reader(file);
-		article_writer writer();
-		reader
+		article_writer writer(file);
+		reader.copy_to_next_token(writer);
 		string source = reader.get_next_token();
 		while (source.length() > 0) {
-			source = next_text();
 			string trans = translator.translate(source.c_str(), language_pair.c_str());
+			reader.copy_to_next_token(writer);
+			source = reader.get_next_token();
 		}
 		file = disk->next();
 	}

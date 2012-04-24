@@ -44,8 +44,9 @@
 		void lang(std::string what) { lang_ = what; }
 		std::string& lang() { return lang_; }
 
+		static std::string id2dir(unsigned long id);
+
 		virtual std::string id2doc(unsigned long id);
-		virtual std::string id2dir(unsigned long id);
 		virtual std::string id2docpath(unsigned long id);
 		virtual std::string id2docpath(unsigned long id, std::string lang);
 		virtual std::string name2docpath(const char *name);

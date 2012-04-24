@@ -8,9 +8,12 @@
 #ifndef ARTICLE_H_
 #define ARTICLE_H_
 
+#include <string>
+
 class article {
 protected:
 	std::string file_path;
+	std::string content;
 
 public:
 	article();
