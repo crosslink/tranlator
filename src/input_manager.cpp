@@ -32,8 +32,12 @@ input_manager::~input_manager() {
 
 }
 
-void input_manager::set_out_path(std::string out_path) {
-	this->out_path = out_path;
+void input_manager::set_out_path(std::string path) {
+	out_path = path;
+}
+
+std::string& input_manager::get_out_path() {
+	return out_path;
 }
 
 void input_manager::init() {

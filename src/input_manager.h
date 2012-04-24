@@ -31,14 +31,9 @@ public:
 	void load(const char *file);
 	void translate();
 
-	std::string next_text();
-
 	void set_language_pair(std::string language_pair);
-	void set_out_path(std::string out_path);
-
-	std::string get_out_path() const {
-		return out_path;
-	}
+	static void set_out_path(std::string out_path);
+	static std::string& get_out_path();
 
 private:
 	void cleanup();

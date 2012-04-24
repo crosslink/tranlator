@@ -21,9 +21,13 @@ public:
 	article_writer(const char *file); // the original input file which need to be saved to a new file with a new name
 	virtual ~article_writer();
 
+	void fill(std::string more);
+
 private:
 //	std::string content; // a copy of the text that is used for saving the translation version
 	void create_output_file(const char *file);
+
+	static void initialize_output_corpus();
 };
 
 #endif /* ARTICLE_WRITER_H_ */

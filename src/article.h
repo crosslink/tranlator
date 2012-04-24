@@ -14,6 +14,7 @@ class article {
 protected:
 	std::string file_path;
 	std::string content;
+	std::string ext;
 
 public:
 	article();
@@ -23,7 +24,8 @@ public:
 	void read();
 	void write();
 
-	static
+	static std::string id2dir(unsigned long id);
+	static int file2id(const char *file);
 };
 
 #endif /* ARTICLE_H_ */
