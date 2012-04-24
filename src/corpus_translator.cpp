@@ -13,7 +13,7 @@
 using namespace std;
 
 void usage(char *program) {
-	cerr << "Usage: " << program << " /a/path/to/translation/corpus" << std::endl;
+	cerr << "Usage: " << program << " [-l:source_lang|target_lang] [-o:/a/path/for/output] /a/path/to/translation/corpus" << std::endl;
 	exit(-1);
 }
 
@@ -29,6 +29,8 @@ int main(int argc, char **argv) {
 		{
 		if (strcmp(argv[param], "-l") == 0)
 			manager.set_language_pair(string(strchr(argv[param], ':') + 1));
+		if (strcmp(argv[param], "-o") == 0)
+			manager.set_out_path(string(strchr(argv[param], ':') + 1));
 //			lowercase_only = TRUE;
 //		else if (strcmp(argv[param], "-noyears") == 0)
 //			print_mode |= MODE_NO_4_DIGIT_NUMBERS;
@@ -51,7 +53,6 @@ int main(int argc, char **argv) {
 		else
 			usage(argv[0]);		// and exit
 		}
-
 
 	for (int i = 1; i < argc; ++i) {
 		manager.load(argv[0]);

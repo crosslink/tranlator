@@ -7,6 +7,7 @@
 
 #include "input_manager.h"
 #include "corpus.h"
+#include "article_reader.h"
 
 #include <string.h>
 
@@ -22,15 +23,20 @@ input_manager::input_manager() {
 
 input_manager::input_manager(std::string lang_pair) : language_pair(lang_pair) {
 	//google_research_translator& translator = google_research_translator::get_instance();
-
+	init();
 }
 
 input_manager::~input_manager() {
-	init();
+
+}
+
+void input_manager::set_out_path(std::string out_path) {
+	this->out_path = out_path;
 }
 
 void input_manager::init() {
 	disk = NULL;
+	out_path = ".";
 }
 
 void input_manager::cleanup() {
@@ -66,7 +72,10 @@ std::string input_manager::next_text() {
 void input_manager::translate() {
 	const char *file = disk->first();
 	while (file != NULL && strlen(file) > 0) {
-		string source = next_text();
+		article_reader reader(file);
+		article_writer writer();
+		reader
+		string source = reader.get_next_token();
 		while (source.length() > 0) {
 			source = next_text();
 			string trans = translator.translate(source.c_str(), language_pair.c_str());

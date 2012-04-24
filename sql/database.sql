@@ -1,5 +1,11 @@
 create database google_translate_info;
 
+CREATE TABLE `google_translate_info`.`translations` (
+`source` TEXT CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL ,
+`translation` TEXT CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL ,
+`source_lang` VARCHAR( 20 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL ,
+`target_lang` VARCHAR( 20 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL
+) ENGINE = InnoDB;
 
 CREATE TABLE IF NOT EXISTS `connection_log` (
   `id` int(11) NOT NULL,
