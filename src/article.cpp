@@ -6,13 +6,26 @@
  */
 
 #include "article.h"
+#include "sys_file.h"
 
-article::article() {
-	// TODO Auto-generated constructor stub
+using namespace std;
 
+article::article(const char *file) : file_path(file) {
+//	content = NULL;
 }
 
 article::~article() {
-	// TODO Auto-generated destructor stub
+//	if (content != NULL)
 }
+
+void article::read() {
+	char *bytes = sys_file::read_entire_file(file_path.c_str());
+	content = string(bytes);
+	delete [] bytes;
+}
+
+void article::write() {
+	sys_file::write(content.c_str(), file_path.c_str());
+}
+
 

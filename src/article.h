@@ -17,7 +17,13 @@ protected:
 
 public:
 	article();
+	article(const char *file);
 	virtual ~article();
+
+	void read();
+	void write();
+
+	static
 };
 
 #endif /* ARTICLE_H_ */
