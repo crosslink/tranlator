@@ -14,6 +14,9 @@ inst_PROGRAMS =
 instdir = /usr/bin
 
 libgoogle_translate_sources = \
+	$(SOURCE_DIR)/language.cpp \
+	$(SOURCE_DIR)/corpus.cpp \
+	$(SOURCE_DIR)/input_manager.cpp \
 	$(SOURCE_DIR)/database_mysql.cpp \
 	$(SOURCE_DIR)/sys_file.cpp \
 	$(SOURCE_DIR)/sys_files.cpp \

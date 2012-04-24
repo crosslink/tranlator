@@ -6,17 +6,53 @@
  */
 
 #include "input_manager.h"
+#include "corpus.h"
+
+#include <string.h>
+
+#include <string>
+
+using namespace std;
+
+google_research_translator& input_manager::translator = google_research_translator::get_instance();
 
 input_manager::input_manager() {
-	// TODO Auto-generated constructor stub
+	init();
+}
+
+input_manager::input_manager(std::string lang_pair) : language_pair(lang_pair) {
+	//google_research_translator& translator = google_research_translator::get_instance();
 
 }
 
 input_manager::~input_manager() {
-	// TODO Auto-generated destructor stub
+	init();
 }
 
-void input_manager::load(const char* file) {
+void input_manager::init() {
+	disk = NULL;
+}
+
+void input_manager::cleanup() {
+	if (disk != NULL)
+		delete disk;
+}
+
+void input_manager::set_language_pair(std::string language_pair) {
+	this->language_pair = language_pair;
+}
+
+void input_manager::load(const char* filename) {
+	disk = new sys_files();
+	disk->pattern("*.[xX][mM][lL]");
+	disk->list(filename);
+	if (disk->isdir(filename)) {
+		corpus::instance().base(filename);
+	}
+//	const char *name = NULL;
+//
+//	for (name = disk->first(); name != NULL ; name = disk->next())
+//	{
 }
 
 /*
@@ -27,8 +63,22 @@ std::string input_manager::next_text() {
 	return "";
 }
 
-std::string input_manager::next_file() {
-	return "";
+void input_manager::translate() {
+	const char *file = disk->first();
+	while (file != NULL && strlen(file) > 0) {
+		string source = next_text();
+		while (source.length() > 0) {
+			source = next_text();
+			string trans = translator.translate(source.c_str(), language_pair.c_str());
+		}
+		file = disk->next();
+	}
 }
+
+
+
+
+
+
 
 
