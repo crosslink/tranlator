@@ -5,6 +5,7 @@ AM_LDFLAGS = @LIBS@ -L/usr/lib64/mysql @MYSQL_LIBS@
 SOURCE_DIR = src
 TEST_DIR = test
 UTILS_DIR = utils
+SQL_DIR = sql
 
 noinst_HEADERS = 
 	
@@ -13,7 +14,26 @@ includes=
 inst_PROGRAMS = 
 instdir = /usr/bin
 
+libgoogle_translate_headers = \
+	$(SOURCE_DIR)/urlcode.h \
+	$(SOURCE_DIR)/ant_link_parts.h \
+	$(SOURCE_DIR)/string_utils.h \
+	$(SOURCE_DIR)/pattern_singleton.h \
+	$(SOURCE_DIR)/article.h \
+	$(SOURCE_DIR)/article_reader.h \
+	$(SOURCE_DIR)/article_writer.h \
+	$(SOURCE_DIR)/language.h \
+	$(SOURCE_DIR)/corpus.h \
+	$(SOURCE_DIR)/input_manager.h \
+	$(SOURCE_DIR)/database_mysql.h \
+	$(SOURCE_DIR)/sys_file.h \
+	$(SOURCE_DIR)/sys_files.h \
+	$(SOURCE_DIR)/google_translator.h \
+	$(SOURCE_DIR)/google_research_translator.h \
+	$(SOURCE_DIR)/webpage_retriever.h
+	
 libgoogle_translate_sources = \
+	$(SOURCE_DIR)/urlcode.cpp \
 	$(SOURCE_DIR)/article.cpp \
 	$(SOURCE_DIR)/article_reader.cpp \
 	$(SOURCE_DIR)/article_writer.cpp \
@@ -29,7 +49,9 @@ libgoogle_translate_sources = \
 
 lib_LTLIBRARIES = libgoogle_translate.la
 
+libgoogle_translate_ladir = /usr/include
 libgoogle_translate_la_SOURCES = $(libgoogle_translate_sources)
+libgoogle_translate_la_HEADERS = $(libgoogle_translate_headers)
 libgoogle_translate_la_LIBADD = -lpthread -lcurl 
 libgoogle_translate_la_LIBFLAGS = 
 		
@@ -57,3 +79,9 @@ test_database_SOURCES = $(TEST_DIR)/test_database.cpp
 test_database_LDADD = -lgoogle_translate
 test_database_DEPENDENCIES = libgoogle_translate.la
 test_database_LDFLAGS = -static
+
+HEADER_FILES = $(SOURCE_DIR)/*.h
+SQL_FILES = $(SQL_DIR)/*.sql
+
+#EXTRA_DIST = \
+#	*.sh
