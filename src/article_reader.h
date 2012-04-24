@@ -14,9 +14,13 @@
 #include "article_writer.h"
 
 class article_reader : public article {
+public:
+	enum {TITLE, CATEGORIES, MAIN_TEXT, EXTERNAL_LINKS};
+
 private:
 //	std::string content;
 //	std::string& out;
+	const char *current;
 
 public:
 	article_reader(const char *file);
@@ -24,6 +28,9 @@ public:
 
 	std::string get_next_token();
 	void copy_to_next_token(article_writer& writer);
+	std::string get_next_token(article_writer& writer);
+
+	virtual void read();
 };
 
 #endif /* ARTICLE_READER_H_ */

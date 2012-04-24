@@ -23,8 +23,18 @@ std::string article_reader::get_next_token() {
 }
 
 void article_reader::copy_to_next_token(article_writer& writer) {
-
+//	content.a
 }
+
+std::string article_reader::get_next_token(article_writer& writer) {
+}
+
+void article_reader::read() {
+	article::read();
+	current = content.c_str();
+}
+
+
 
 
 

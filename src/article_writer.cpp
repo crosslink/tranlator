@@ -31,6 +31,10 @@ void article_writer::fill(std::string more) {
 	content.append(more);
 }
 
+void article_writer::fill(const char* more, size_t length) {
+	content.append(more, length);
+}
+
 void article_writer::initialize_output_corpus() {
 	out = corpus(input_manager::get_out_path());
 }

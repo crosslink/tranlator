@@ -72,12 +72,14 @@ void input_manager::translate() {
 	while (file != NULL && strlen(file) > 0) {
 		article_reader reader(file);
 		article_writer writer(file);
-		reader.copy_to_next_token(writer);
-		string source = reader.get_next_token();
+//		reader.copy_to_next_token(writer);
+		string source = reader.get_next_token(writer);
 		while (source.length() > 0) {
+
+//			reader.copy_to_next_token(writer);
+			source = reader.get_next_token(writer);
 			string trans = translator.translate(source.c_str(), language_pair.c_str());
-			reader.copy_to_next_token(writer);
-			source = reader.get_next_token();
+			writer.fill(trans);
 		}
 		file = disk->next();
 	}

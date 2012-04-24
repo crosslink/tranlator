@@ -22,6 +22,7 @@ public:
 	virtual ~article_writer();
 
 	void fill(std::string more);
+	void fill(const char *more, size_t length);
 
 private:
 //	std::string content; // a copy of the text that is used for saving the translation version

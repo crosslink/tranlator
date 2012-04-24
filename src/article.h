@@ -21,8 +21,8 @@ public:
 	article(const char *file);
 	virtual ~article();
 
-	void read();
-	void write();
+	virtual void read();
+	virtual void write();
 
 	static std::string id2dir(unsigned long id);
 	static int file2id(const char *file);
