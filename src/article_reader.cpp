@@ -54,7 +54,8 @@ return file;
 
 
 article_reader::article_reader(const char *file) {
-
+	first_para = NULL;
+	first_section = NULL;
 }
 
 article_reader::~article_reader() {
@@ -271,6 +272,9 @@ void article_reader::skip_external_links() {
 void article_reader::init_token() {
 	current_token.start = NULL;
 	current_token.length = 0;
+
+	start = NULL;
+	end = NULL;
 }
 
 void article_reader::read_section() {
