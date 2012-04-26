@@ -13,6 +13,7 @@
 #include <string.h>
 
 #include <string>
+#include <iostream>
 
 using namespace std;
 
@@ -79,7 +80,7 @@ void input_manager::translate() {
 
 	//			reader.copy_to_next_token(writer);
 				source = reader.get_next_token();
-				string trans = translator.translate(source.c_str(), language_pair.c_str());
+				string trans = translator.translate(source->start, language_pair.c_str(), source->length);
 				writer.fill(trans);
 			}
 			file = disk->next();

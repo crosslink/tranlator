@@ -33,10 +33,10 @@ private:
 
 	int progress;
 
-	const char *start, *end = NULL;
-	const char *body_start = NULL;
-	const char *first_para = NULL;  // if
-	const char *first_section = NULL; // anything before the first section is abstract
+	const char *start, *end;
+	const char *body_start;
+	const char *first_para;  // if
+	const char *first_section; // anything before the first section is abstract
 
 public:
 	article_reader(const char *file);

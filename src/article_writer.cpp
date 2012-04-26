@@ -12,6 +12,8 @@
 
 using namespace std;
 
+corpus article_writer::out;
+
 article_writer::article_writer(const char *file) {
 	create_output_file(file);
 }
@@ -39,7 +41,8 @@ void article_writer::fill(const char* more, size_t length) {
 }
 
 void article_writer::initialize_output_corpus() {
-	out = corpus(input_manager::get_out_path());
+	out.base(input_manager::get_out_path());
+
 }
 
 

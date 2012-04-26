@@ -15,6 +15,7 @@
 #include <string>
 #include <iostream>
 #include <exception>
+#include <algorithm>
 
 using namespace std;
 
@@ -164,7 +165,7 @@ void article_reader::read_title() {
 
 	if (start == NULL || end == NULL) {
 		string msg = string("The article is not well-formed in the article title: ") + file_path;
-		throw exception(msg.c_str());
+		throw msg.c_str();
 	}
 }
 
@@ -182,7 +183,7 @@ void article_reader::read_categories() {
 	else
 		if (end == NULL) {
 			string msg = string("The article is not well-formed in the article title: ") + file_path;
-			throw exception(msg.c_str());
+			throw msg.c_str();
 		}
 
 }
@@ -246,7 +247,7 @@ void article_reader::reconstruct_comment() {
 		}
 		else {
 			string msg = string("The article is not well-formed in the comment: ") + file_path;
-			throw exception(msg.c_str());
+			throw msg.c_str();
 		}
 	}
 	else {
@@ -283,7 +284,7 @@ void article_reader::read_section() {
 	while ((sec_start = strstr(current, SECTION_TAG_START)) != NULL) {
 		// the first st is the section title of current section
 		read_element_text("st");
-		current_tag.erase(remove_if(current_tag.begin(), current_tag.end(), isspace), current_tag.end());
+		current_tag.erase(remove_if(current_tag.begin(), current_tag.end(), (int(*)(int))isspace), current_tag.end());
 		if (strcasecmp(current_tag.c_str(), "Notes") == 0)
 			skip_notes();
 		else if ((strcasecmp(current_tag.c_str(), "References") == 0))
@@ -330,7 +331,7 @@ void article_reader::read_element_text(const char* tag_name) {
 			}
 			else {
 				string msg = string("The article is not well-formed, missing < or >: ") + file_path;
-				throw exception(msg.c_str());
+				throw msg.c_str();
 			}
 		}
 
@@ -370,7 +371,7 @@ void article_reader::wrap_up_to_body() {
 	}
 	else {
 		string msg = string("The article is not well-formed in the <bdy>: ") + file_path;
-		throw exception(msg.c_str());
+		throw msg.c_str();
 	}
 }
 
