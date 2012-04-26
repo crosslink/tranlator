@@ -20,17 +20,19 @@ article::article() {
 }
 
 article::article(const char *file) : file_path(file) {
-//	content = NULL;
+	content = NULL;
 }
 
 article::~article() {
-//	if (content != NULL)
+	if (content != NULL)
+		delete [] content;
 }
 
 void article::read() {
-	char *bytes = sys_file::read_entire_file(file_path.c_str());
-	content = string(bytes);
-	delete [] bytes;
+//	char *bytes = sys_file::read_entire_file(file_path.c_str());
+//	content = string(bytes);
+	content = sys_file::read_entire_file(file_path.c_str());
+//	delete [] bytes;
 }
 
 void article::write() {

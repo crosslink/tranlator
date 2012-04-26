@@ -37,6 +37,8 @@ private:
 	const char *body_start;
 	const char *first_para;  // if
 	const char *first_section; // anything before the first section is abstract
+	const char *next_section;
+	const char *sec_start;
 
 public:
 	article_reader(const char *file);
@@ -48,14 +50,13 @@ public:
 
 	virtual void read();
 
-	static char *string_clean(char *file, long lower_case_only = 1, long trim = 1);
+	static char *string_clean(token_string& token, long lower_case_only = 0);
 
 private:
 	void init_token();
 	void process();
 
 	void read_element_text(const char *tag_name);
-	std::string get_element_text(const char *tag_name);
 
 	void read_title();
 	void read_categories();
@@ -64,7 +65,7 @@ private:
 	void read_notes();
 
 	void read_section();
-	void read_para(const char *p_start, const char *p_end);
+	void read_para();
 
 	void create_comment();
 	void reconstruct_comment();
@@ -77,6 +78,7 @@ private:
 	void wrap_up_to_end();
 
 	void copy_to_current(const char *start, const char *end);
+	void copy_to_section_end();
 };
 
 #endif /* ARTICLE_READER_H_ */

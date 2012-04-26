@@ -13,7 +13,7 @@
 class article {
 protected:
 	std::string file_path;
-	std::string content;
+	char *content;
 	std::string ext;
 
 public:
