@@ -1,0 +1,49 @@
+src/google_translator_d.o: src/google_translator.cpp \
+ src/google_translator.h src/pattern_singleton.h src/webpage_retriever.h \
+ src/string_utils.h src/sys_file.h \
+ /home/monfee/workspace/stpl/stpl/stpl_parser.h \
+ /home/monfee/workspace/stpl/stpl/stpl_grammar.h \
+ /home/monfee/workspace/stpl/stpl/stpl_rule.h \
+ /home/monfee/workspace/stpl/stpl/stpl_entity.h \
+ /home/monfee/workspace/stpl/stpl/lang/stpl_character.h \
+ /home/monfee/workspace/stpl/stpl/stpl_entity.tcc \
+ /home/monfee/workspace/stpl/stpl/../utils/icstring.h \
+ /home/monfee/workspace/stpl/stpl/stpl_scanner.h \
+ /home/monfee/workspace/stpl/stpl/stpl_doc.h \
+ /home/monfee/workspace/stpl/stpl/stpl_typetraits.h \
+ /home/monfee/workspace/stpl/stpl/stpl_othertraits.h \
+ /home/monfee/workspace/stpl/stpl/stpl_property.h
+
+src/google_translator.h:
+
+src/pattern_singleton.h:
+
+src/webpage_retriever.h:
+
+src/string_utils.h:
+
+src/sys_file.h:
+
+/home/monfee/workspace/stpl/stpl/stpl_parser.h:
+
+/home/monfee/workspace/stpl/stpl/stpl_grammar.h:
+
+/home/monfee/workspace/stpl/stpl/stpl_rule.h:
+
+/home/monfee/workspace/stpl/stpl/stpl_entity.h:
+
+/home/monfee/workspace/stpl/stpl/lang/stpl_character.h:
+
+/home/monfee/workspace/stpl/stpl/stpl_entity.tcc:
+
+/home/monfee/workspace/stpl/stpl/../utils/icstring.h:
+
+/home/monfee/workspace/stpl/stpl/stpl_scanner.h:
+
+/home/monfee/workspace/stpl/stpl/stpl_doc.h:
+
+/home/monfee/workspace/stpl/stpl/stpl_typetraits.h:
+
+/home/monfee/workspace/stpl/stpl/stpl_othertraits.h:
+
+/home/monfee/workspace/stpl/stpl/stpl_property.h:

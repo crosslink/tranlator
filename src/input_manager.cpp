@@ -69,19 +69,24 @@ void input_manager::load(const char* filename) {
 
 void input_manager::translate() {
 	const char *file = disk->first();
-	while (file != NULL && strlen(file) > 0) {
-		article_reader reader(file);
-		article_writer writer(file);
-//		reader.copy_to_next_token(writer);
-		string source = reader.get_next_token(writer);
-		while (source.length() > 0) {
+	try {
+		while (file != NULL && strlen(file) > 0) {
+			article_reader reader(file);
+			article_writer writer(file);
+	//		reader.copy_to_next_token(writer);
+			string source = reader.get_next_token(writer);
+			while (source.length() > 0) {
 
-//			reader.copy_to_next_token(writer);
-			source = reader.get_next_token(writer);
-			string trans = translator.translate(source.c_str(), language_pair.c_str());
-			writer.fill(trans);
+	//			reader.copy_to_next_token(writer);
+				source = reader.get_next_token();
+				string trans = translator.translate(source.c_str(), language_pair.c_str());
+				writer.fill(trans);
+			}
+			file = disk->next();
 		}
-		file = disk->next();
+	}
+	catch (exception& e) {
+		cout << e.what() << endl;
 	}
 }
 
