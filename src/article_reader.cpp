@@ -6,6 +6,7 @@
  */
 
 #include "article_reader.h"
+//#include "ant_link_parts.h"
 
 #include <time.h>
 #include <stdio.h>
@@ -16,6 +17,41 @@
 #include <exception>
 
 using namespace std;
+
+char *article_reader::string_clean(char *file, long lower_case_only, long trim)
+{
+char *ch, *from, *to;
+
+/*
+	remove XML tags and remove all non-alnum (but keep case)
+*/
+ch = file;
+while (*ch != '\0')
+	{
+	if (*ch == '<')			// then remove the XML tags
+		{
+		while (*ch != '>')
+			*ch++ = ' ';
+		*ch++ = ' ';
+		}
+	else if (!isalnum(*ch))	// then remove it
+		*ch++ = ' ';
+	else
+		{
+		if (lower_case_only)
+			{
+			*ch = (char)tolower(*ch);
+			ch++;
+			}
+		else
+			ch++;
+		}
+	}
+
+return file;
+}
+
+
 
 article_reader::article_reader(const char *file) {
 
@@ -54,36 +90,42 @@ void article_reader::process() {
 		previous = current;
 	}
 
-	switch (progress) {
-	case TITLE:
-		this->read_title();
-		++progress;
-		break;
-	case CATEGORIES:
-		this->read_categories();
-//		++progress;
-		break;
-	case ABSTRACT:
-		this->read_abstract();
-//		++progress;
-		break;
-	case MAIN_TEXT:
-		this->read_main_text();
-//		++progress;
-		break;
-	case NOTES:
-//		this->skip_notes();
-		this->read_notes();
-//		++progress;
-		break;
-	case REFERENCES:
-		this->skip_references();
-		++progress;
-		break;
-	case EXTERNAL_LINKS:
-		this->skip_external_links();
-		++progress;
-		break;
+	while (progress <= EXTERNAL_LINKS && current_token.length == 0) {
+		switch (progress) {
+		case TITLE:
+			this->read_title();
+			++progress;
+			break;
+		case CATEGORIES:
+			this->read_categories();
+	//		++progress;
+			break;
+		case ABSTRACT:
+			this->read_abstract();
+	//		++progress;
+			break;
+		case MAIN_TEXT:
+			this->read_main_text();
+	//		++progress;
+			break;
+		case NOTES:
+	//		this->skip_notes();
+			this->read_notes();
+	//		++progress;
+			break;
+		case REFERENCES:
+			this->skip_references();
+			++progress;
+			break;
+		case EXTERNAL_LINKS:
+			this->skip_external_links();
+			++progress;
+			break;
+		}
+	}
+
+	if (progress > EXTERNAL_LINKS) {
+		wrap_up_to_end();
 	}
 }
 
@@ -91,6 +133,9 @@ void article_reader::read() {
 	article::read();
 	current = content.c_str();
 	previous = current;
+
+	first_para = strstr(current, "<p>");
+	first_section = strstr(current, "<sec>");
 }
 
 void article_reader::read_title() {
@@ -142,7 +187,9 @@ void article_reader::read_categories() {
 }
 
 void article_reader::read_abstract() {
+	while (current < first_section) {
 
+	}
 }
 
 void article_reader::read_main_text() {
@@ -150,6 +197,8 @@ void article_reader::read_main_text() {
 }
 
 void article_reader::skip_notes() {
+
+	start = strstr(current, "");
 
 }
 
@@ -225,11 +274,36 @@ void article_reader::init_token() {
 }
 
 void article_reader::read_section() {
+	static const char *SECTION_TAG_START = "<sec>";
+	const char *sec_start;
+	while ((sec_start = strstr(current, SECTION_TAG_START)) != NULL) {
+		// the first st is the section title of current section
+		read_element_text("st");
+		current_tag.erase(remove_if(current_tag.begin(), current_tag.end(), isspace), current_tag.end());
+		if (strcasecmp(current_tag.c_str(), "Notes") == 0)
+			skip_notes();
+		else if ((strcasecmp(current_tag.c_str(), "References") == 0))
+			skip_references();
+		else if (strcasecmp(current_tag.c_str(), "Externallinks") == 0)
+			skip_external_links();
+		else {
+			if (current_token.length != 0)
+				break;
+
+		}
+	}
+}
+
+std::string article_reader::get_element_text(const char* tag_name) {
+
 }
 
 void article_reader::read_element_text(const char* tag_name) {
 	string tag_start;
 	string tag_end;
+
+	current_tag = tag_name;
+
 	if (tag_name != NULL) {
 		tag_start = string("<") + tag_name + string(">");
 		tag_end = string("</") + tag_name + string(">");;
@@ -267,9 +341,13 @@ void article_reader::read_element_text(const char* tag_name) {
 			current_token.length = end - start;
 		}
 	}
+
+	while (current_token.length > 0 && isspace(current_token.start[current_token.length -1]))
+		current_token.length--;
 }
 
-void article_reader::read_para() {
+void article_reader::read_para(const char *p_start, const char *p_end) {
+
 }
 
 
@@ -278,12 +356,13 @@ void article_reader::wrap_up_to_body() {
 
 	start = strstr(current, BODY_TAG_START);
 	if (start != NULL) {
-		start += strlen(BODY_TAG_START);
-		while (isspace(*start))
-			++start;
-		previous = current;
-		current = start;
+//		start += strlen(BODY_TAG_START);
+//		while (isspace(*start))
+//			++start;
 
+		current = start;
+		copy_to_current(previous, current);
+		previous = current;
 	}
 	else {
 		string msg = string("The article is not well-formed in the <bdy>: ") + file_path;

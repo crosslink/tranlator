@@ -29,6 +29,7 @@ private:
 	const char *previous;
 	article_writer *writer;
 	token_string current_token;
+	std::string current_tag;
 
 	int progress;
 
@@ -47,11 +48,14 @@ public:
 
 	virtual void read();
 
+	static char *string_clean(char *file, long lower_case_only = 1, long trim = 1);
+
 private:
 	void init_token();
 	void process();
 
 	void read_element_text(const char *tag_name);
+	std::string get_element_text(const char *tag_name);
 
 	void read_title();
 	void read_categories();
@@ -60,7 +64,7 @@ private:
 	void read_notes();
 
 	void read_section();
-	void read_para();
+	void read_para(const char *p_start, const char *p_end);
 
 	void create_comment();
 	void reconstruct_comment();
