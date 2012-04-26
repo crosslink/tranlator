@@ -74,8 +74,8 @@ void input_manager::translate() {
 			article_reader reader(file);
 			article_writer writer(file);
 	//		reader.copy_to_next_token(writer);
-			string source = reader.get_next_token(writer);
-			while (source.length() > 0) {
+			token_string *source = reader.get_next_token(writer);
+			while (source->length > 0) {
 
 	//			reader.copy_to_next_token(writer);
 				source = reader.get_next_token();

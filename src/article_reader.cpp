@@ -18,8 +18,7 @@
 using namespace std;
 
 article_reader::article_reader(const char *file) {
-	current_token.start = NULL;
-	current_token.length = 0;
+
 }
 
 article_reader::~article_reader() {
@@ -48,6 +47,12 @@ token_string * article_reader::get_next_token(article_writer& the_writer) {
 }
 
 void article_reader::process() {
+	init_token();
+
+	if (current != previous) {
+		copy_to_current(previous, current);
+		previous = current;
+	}
 
 	switch (progress) {
 	case TITLE:
@@ -56,20 +61,24 @@ void article_reader::process() {
 		break;
 	case CATEGORIES:
 		this->read_categories();
-		++progress;
+//		++progress;
+		break;
+	case ABSTRACT:
+		this->read_abstract();
+//		++progress;
 		break;
 	case MAIN_TEXT:
 		this->read_main_text();
-		++progress;
+//		++progress;
 		break;
 	case NOTES:
 //		this->skip_notes();
 		this->read_notes();
-		++progress;
+//		++progress;
 		break;
 	case REFERENCES:
-		++progress;
 		this->skip_references();
+		++progress;
 		break;
 	case EXTERNAL_LINKS:
 		this->skip_external_links();
@@ -81,10 +90,10 @@ void article_reader::process() {
 void article_reader::read() {
 	article::read();
 	current = content.c_str();
+	previous = current;
 }
 
 void article_reader::read_title() {
-	const char *start, *end = NULL;
 	static const char *TITLE_TAG_START = "<title>";
 	static const char *TITLE_TAG_END = "</title>";
 
@@ -96,8 +105,10 @@ void article_reader::read_title() {
 
 		end = strstr(start, TITLE_TAG_END);
 		if (end != NULL) {
-			end += strlen(TITLE_TAG_END);
+			previous = current;
+			current = end += strlen(TITLE_TAG_END);
 			current_token.length = end - start;
+
 
 //			start = strchr(start, '"');
 //			++start;
@@ -112,6 +123,25 @@ void article_reader::read_title() {
 }
 
 void article_reader::read_categories() {
+	static const char *CATEGORY_TAG = "category";
+//	static const char *CATEGORY_TAG_START = "<category>";
+//	static const char *CATEGORY_TAG_END = "</category>";
+
+	read_element_text(CATEGORY_TAG);
+
+	if (start == NULL) {
+		++progress;
+		wrap_up_to_body();
+	}
+	else
+		if (end == NULL) {
+			string msg = string("The article is not well-formed in the article title: ") + file_path;
+			throw exception(msg.c_str());
+		}
+
+}
+
+void article_reader::read_abstract() {
 
 }
 
@@ -132,7 +162,6 @@ void article_reader::read_notes() {
 }
 
 void article_reader::reconstruct_comment() {
-	const char *start, *end = NULL;
 	static const char *COMMENT_TAG_START = "<!--";
 	static const char *COMMENT_TAG_END = "-->";
 
@@ -191,6 +220,79 @@ void article_reader::skip_external_links() {
 }
 
 void article_reader::init_token() {
+	current_token.start = NULL;
+	current_token.length = 0;
+}
+
+void article_reader::read_section() {
+}
+
+void article_reader::read_element_text(const char* tag_name) {
+	string tag_start;
+	string tag_end;
+	if (tag_name != NULL) {
+		tag_start = string("<") + tag_name + string(">");
+		tag_end = string("</") + tag_name + string(">");;
+	}
+	else {
+		tag_start = string("<");
+		tag_end = string("<");
+	}
+
+	start = strstr(current, tag_start.c_str());
+	if (start != NULL) {
+		start += strlen(tag_start.c_str());
+
+		if (start == "<") {
+			start = strchr(++start, '>');
+			if (start != NULL) {
+				++start;
+				while (isspace(*start))
+					++start;
+			}
+			else {
+				string msg = string("The article is not well-formed, missing < or >: ") + file_path;
+				throw exception(msg.c_str());
+			}
+		}
+
+		current_token.start = start;
+		copy_to_current(current, start);
+		previous = current = start;
+
+		end = strstr(start, tag_end.c_str());
+		if (end != NULL) {
+			previous = current;
+			current = end += strlen(tag_end.c_str());
+			current_token.length = end - start;
+		}
+	}
+}
+
+void article_reader::read_para() {
+}
+
+
+void article_reader::wrap_up_to_body() {
+	static const char *BODY_TAG_START = "<bdy>";
+
+	start = strstr(current, BODY_TAG_START);
+	if (start != NULL) {
+		start += strlen(BODY_TAG_START);
+		while (isspace(*start))
+			++start;
+		previous = current;
+		current = start;
+
+	}
+	else {
+		string msg = string("The article is not well-formed in the <bdy>: ") + file_path;
+		throw exception(msg.c_str());
+	}
+}
+
+void article_reader::wrap_up_to_end() {
+	writer->fill(current);
 }
 
 void article_reader::copy_to_current(const char *start, const char *end) {

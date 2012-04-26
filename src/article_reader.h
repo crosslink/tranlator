@@ -32,6 +32,11 @@ private:
 
 	int progress;
 
+	const char *start, *end = NULL;
+	const char *body_start = NULL;
+	const char *first_para = NULL;  // if
+	const char *first_section = NULL; // anything before the first section is abstract
+
 public:
 	article_reader(const char *file);
 	virtual ~article_reader();
@@ -46,10 +51,16 @@ private:
 	void init_token();
 	void process();
 
+	void read_element_text(const char *tag_name);
+
 	void read_title();
 	void read_categories();
+	void read_abstract();
 	void read_main_text();
 	void read_notes();
+
+	void read_section();
+	void read_para();
 
 	void create_comment();
 	void reconstruct_comment();
@@ -57,6 +68,9 @@ private:
 	void skip_notes();
 	void skip_references();
 	void skip_external_links();
+
+	void wrap_up_to_body();
+	void wrap_up_to_end();
 
 	void copy_to_current(const char *start, const char *end);
 };

@@ -45,7 +45,7 @@
 		google_translator();
 		virtual ~google_translator();
 
-		std::string translate(const char *text, const char *language_pair);
+		std::string translate(const char *text, const char *language_pair, long length = 0);
 		static bool has_valid_key();
 
 		virtual std::string get_translation(const char *content);
@@ -54,11 +54,11 @@
 
 	protected:
 
-		void append_text(std::string& url, const char *text);
+		void append_text(std::string& url, const char *text, long length = 0);
 		void append_lp(std::string& url, const char *language_pair);
 
 		void add_lang_options(std::string& url, const char *language_pair);
-		void add_text_option(std::string& url, const char *text);
+		void add_text_option(std::string& url, const char *text, long length = 0);
 
 //	private:
 		void init();

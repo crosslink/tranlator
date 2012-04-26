@@ -112,7 +112,7 @@ bool google_translator::has_valid_key() {
 	return key_status == KEY_VALID;
 }
 
-std::string google_translator::translate(const char *text, const char *language_pair)
+std::string google_translator::translate(const char *text, const char *language_pair, long length)
 {
 	string url(query_template);
 //		append_lp(url, language_pair);
@@ -176,10 +176,11 @@ std::string google_translator::get_translation(const char *content)
 //		return "";
 //	}
 
-void google_translator::append_text(std::string& url, const char *text)
+void google_translator::append_text(std::string& url, const char *text, long length)
 {
 	url.append("&text=");
-	while (*text != '\0') {
+	long count = 0;
+	while (*text != '\0' && count < length) {
 		if (*text == ' ')
 			url.append("%20");
 		else if (*text == ',')
@@ -191,7 +192,7 @@ void google_translator::append_text(std::string& url, const char *text)
 		else
 			url.append("%" + byte_to_string(*text, 16));
 
-		++text;
+		text += (++count);
 	}
 	//url.append(text);
 }
@@ -217,9 +218,9 @@ void google_translator::add_lang_options(std::string& url,const char *language_p
 	url.append(target_lang);
 }
 
-void google_translator::add_text_option(std::string& url, const char *text)
+void google_translator::add_text_option(std::string& url, const char *text, long length)
 {
 	url.append("&q=");
-	url.append(text);
+	url.append(text, length);
 }
 
