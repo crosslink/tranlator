@@ -212,6 +212,7 @@ void article_reader::read_categories() {
 
 void article_reader::read_abstract() {
 	static const char *PARA_TAG_START = "<p>";
+	static const char *PARA_TAG_END = "</p>";
 //	while (current < first_section) {
 //
 //	}
@@ -224,32 +225,39 @@ void article_reader::read_abstract() {
 	}
 
 //	para_start = current;
-	read_para();
 
 	if (first_para > first_section) {
+		next_para = first_section;
 		if (current >= first_section) {
 			++progress;
+			return;
 		}
 	}
 	else {
 		para_start = strstr(current, PARA_TAG_START);
-		if (para_start > first_section)
+
+		if (para_start > first_section) {
 			++progress;
-	//	if (para_start == NULL || (next_para != NULL && current > next_para)) {
-//			if (next_para != NULL) {
-//				para_start = next_para;
-//			}
-//			else {
-//				para_start = strstr(current, PARA_TAG_START);
-//				next_para = strstr(para_start + strlen(PARA_TAG_START), PARA_TAG_START);
-//			}
+			return;
+		}
+
+		next_para = strstr(para_start + strlen(PARA_TAG_START), PARA_TAG_START);
+		if (next_para == NULL) {
+			next_para = strstr(para_start + strlen(PARA_TAG_END), PARA_TAG_END);
+
+			if (next_para == NULL) {
+				string msg = string("The article is not well-formed, <p> missing </p>: ") + file_path;
+				throw msg.c_str();
+			}
+		}
+
 	}
-//		copy_to_current(current, para_start);
-//		current = para_start;
-//	}
+
+	read_para();
 }
 
 void article_reader::read_main_text() {
+	sec_start == NULL;
 	read_section();
 //	while (next_section != NULL)
 //		read_section();
@@ -405,6 +413,8 @@ void article_reader::read_section() {
 void article_reader::read_para() {
 	static const char *IMAGE_TAG_END = "</image>";
 
+	current_tag = "paragraph";
+
 	while (isspace(*current))
 		++current;
 
@@ -438,6 +448,13 @@ void article_reader::read_para() {
 			char *test_forward;
 			while (*current != '\0')
 				{
+
+				if (current >= next_para) {
+					if (current_token.start != NULL)
+						current_token.length = current - current_token.start;
+					break;
+				}
+
 				if (*current == '<')			// then remove the XML tags
 				{
 					test_forward = current;
@@ -446,6 +463,7 @@ void article_reader::read_para() {
 						this_tag.push_back(*test_forward++);
 
 					if (strcasecmp(this_tag.c_str(), "image") == 0) {
+//						current_tag = "image";
 						if (current_token.start != NULL) {
 							current_token.length = current - current_token.start;
 							break;
@@ -468,10 +486,10 @@ void article_reader::read_para() {
 						if (current_token.length > 0)
 							break;
 					}
-					else if (strcasecmp(this_tag.c_str(), "table") == 0) {
-						while (current_token.length == 0 && current != '\0')
-							read_element_text(NULL);
-					}
+//					else if (strcasecmp(this_tag.c_str(), "table") == 0) {
+//						while (current_token.length == 0 && current != '\0')
+//							read_element_text(NULL);
+//					}
 					else {
 						while (*current != '>')
 							*current++ = ' ';

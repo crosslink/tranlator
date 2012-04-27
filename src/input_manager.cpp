@@ -85,13 +85,16 @@ void input_manager::translate() {
 
 	//			reader.copy_to_next_token(writer);
 //				string trans = translator.translate(source->start, language_pair.c_str(), source->length);
-				string source_str(source->start, source->length);
+				char *source_string = new char [source->length + 1];
+				memcpy(source_string, source->start, source->length);
+				source_string[source->length] = '\0';
+//				string source_str(source->start, source->length);
 #ifdef DEBUG
-				cerr << source->tag << ": " << source_str << endl;
+				cerr << source->tag << ": " << source_string << endl;
 #endif
 //				string trans = string();
 //				writer.fill(trans);
-
+				delete [] source_string;
 				source = reader.get_next_token();
 			}
 			file = disk->next();
