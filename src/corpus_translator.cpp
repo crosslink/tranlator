@@ -27,7 +27,7 @@ int main(int argc, char **argv) {
 	const char *p;
 	bool has_error_param;
 
-	for (param = 1; *argv[param] == '-'; param++)
+	for (param = 1; param < argc && *argv[param] == '-'; param++)
 		{
 		if (strncmp(argv[param], "-l", 2) == 0) {
 			p = strchr(argv[param], ':');
