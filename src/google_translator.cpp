@@ -117,7 +117,7 @@ std::string google_translator::translate(const char *text, const char *language_
 	string url(query_template);
 //		append_lp(url, language_pair);
 //		append_text(url, text);
-	add_text_option(url, text);
+	add_text_option(url, text, length);
 	add_lang_options(url, language_pair);
 	const char *content = webpage_retriever::instance().retrieve(url.c_str());
 
@@ -221,6 +221,9 @@ void google_translator::add_lang_options(std::string& url,const char *language_p
 void google_translator::add_text_option(std::string& url, const char *text, long length)
 {
 	url.append("&q=");
-	url.append(text, length);
+	if (length > -1)
+		url.append(text, length);
+	else
+		url.append(text);
 }
 

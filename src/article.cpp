@@ -36,7 +36,7 @@ void article::read() {
 }
 
 void article::write() {
-	sys_file::write(content.c_str(), file_path.c_str());
+	sys_file::write(content, file_path.c_str());
 }
 
 std::string article::id2dir(unsigned long id) {

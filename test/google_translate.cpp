@@ -14,7 +14,7 @@ int main(int argc, char **argv) {
 //	google_translator::load_key();
 	google_research_translator& translator = google_research_translator::get_instance();
 
-	std::cout << "Hello, world!" << std::endl;
+//	std::cout << "Hello, world!" << std::endl;
 	return 0;
 }
 

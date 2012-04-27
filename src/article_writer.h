@@ -16,6 +16,7 @@
 class article_writer : public article {
 private:
 	static corpus out;
+	std::string out_content;
 
 public:
 	article_writer(const char *file); // the original input file which need to be saved to a new file with a new name

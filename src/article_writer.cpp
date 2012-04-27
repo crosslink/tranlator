@@ -30,14 +30,14 @@ article_writer::~article_writer() {
 }
 
 void article_writer::fill(std::string more) {
-	content.append(more);
+	out_content.append(more);
 }
 
 void article_writer::fill(const char* more, size_t length) {
 	if (length > -1)
-		content.append(more, length);
+		out_content.append(more, length);
 	else
-		content.append(more);
+		out_content.append(more);
 }
 
 void article_writer::initialize_output_corpus() {

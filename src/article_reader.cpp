@@ -156,7 +156,7 @@ void article_reader::read_title() {
 	start = strstr(current, TITLE_TAG_START);
 	if (start != NULL) {
 		start += strlen(TITLE_TAG_START);
-		current_token.start = start;
+		current_token.start = (char *)start;
 		copy_to_current(current, start);
 
 		end = strstr(start, TITLE_TAG_END);
@@ -292,6 +292,7 @@ void article_reader::read_section() {
 	static const char *SECTION_TAG_START = "<sec>";
 	static const char *NOTES_TEXT = "Notes";
 	static const char *REFERENCES_TEXT = "References";
+	static const char *REFERENCES_TEXT2 = "Furtherreading";
 	static const char *EXTERNAL_LINKS_TEXT = "Externallinks";
 
 //	const char *sec_start;
@@ -304,7 +305,7 @@ void article_reader::read_section() {
 		}
 
 		copy_to_current(current, sec_start);
-		current = sec_start;
+		current = (char *)sec_start;
 
 		if (sec_start != NULL) {
 			next_section = strstr(sec_start + strlen(SECTION_TAG_START), SECTION_TAG_START);
@@ -315,11 +316,13 @@ void article_reader::read_section() {
 				progress = NOTES; //skip_notes();
 			else if ((strncasecmp(current_tag.c_str(), REFERENCES_TEXT, strlen(REFERENCES_TEXT)) == 0))
 				progress = REFERENCES; //skip_references();
+			else if ((strncasecmp(current_tag.c_str(), REFERENCES_TEXT2, strlen(REFERENCES_TEXT)) == 0))
+				progress = REFERENCES;
 			else if (strncasecmp(current_tag.c_str(), EXTERNAL_LINKS_TEXT, strlen(EXTERNAL_LINKS_TEXT)) == 0)
 				progress = EXTERNAL_LINKS; //skip_external_links();
 			else {
 				if (current_token.length != 0)
-					break;
+					return;
 
 			}
 		}
@@ -335,9 +338,76 @@ void article_reader::read_section() {
  * const char *p_start, const char *p_end
  */
 void article_reader::read_para() {
-	read_element_text("p");
-	if (current_token.length > 0)
-		string_clean(current_token);
+	static const char *PARA_TAG_START = "<p>";
+
+	while (isspace(*current))
+		++current;
+
+	if (para_start == NULL || (next_para != NULL && current > next_para)) {
+		if (next_para != NULL) {
+			para_start = next_para;
+		}
+		else {
+			para_start = strstr(current, PARA_TAG_START);
+			next_para = strstr(para_start + strlen(PARA_TAG_START), PARA_TAG_START);
+		}
+
+//		copy_to_current(current, para_start);
+//		current = para_start;
+	}
+
+//	if ((para_start != NULL && next_para == NULL) || (para_start != NULL && para_start < next_para)) {
+		if ((para_start != NULL && current < para_start) ||
+				(para_start == NULL && current < next_para) ||
+				(para_start == NULL && next_para == NULL)) {
+			while (current_token.length == 0)
+				read_element_text(NULL);
+		}
+		else {
+			string this_tag("");
+			const char *test_forward;
+			while (*current != '\0')
+				{
+				if (*current == '<')			// then remove the XML tags
+				{
+					test_forward = current;
+					while (*test_forward != '>' && !isspace(*test_forward))
+						this_tag.push_back(*test_forward++);
+
+					if (strcasecmp(this_tag.c_str(), "image") == 0) {
+						if (current_token.start != NULL) {
+							current_token.length = current - current_token.start;
+							break;
+						}
+
+						previous = current;
+						while (*current != '>')
+							++current;
+						copy_to_current(previous, current);
+						read_element_text(NULL);
+						if (current_token.length > 0)
+							break;
+					}
+					else {
+						while (*current != '>')
+							*current++ = ' ';
+						*current++ = ' ';
+					}
+				}
+				else
+				{
+					current_token.start = current;
+					current++;
+				}
+			}
+		}
+//	}
+
+
+//	read_element_text("p");
+//	for (int i = 0; i < current_token)
+//	if (current_token.length > 0)
+//		string_clean(current_token);
 }
 
 void article_reader::read_element_text(const char* tag_name) {
@@ -346,7 +416,7 @@ void article_reader::read_element_text(const char* tag_name) {
 
 	current_tag = tag_name;
 
-	if (tag_name != NULL) {
+	if (tag_name != NULL || strlen(tag_name) == 0) {
 		tag_start = string("<") + tag_name + string(">");
 		tag_end = string("</") + tag_name + string(">");;
 	}
@@ -424,7 +494,7 @@ void article_reader::copy_to_section_end() {
 		if (section_end != NULL) {
 			section_end += strlen(SECTION_TAG_END);
 			copy_to_current(start, section_end);
-			current = section_end;
+			current = (char *)section_end;
 		}
 	}
 }

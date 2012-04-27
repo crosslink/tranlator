@@ -14,7 +14,7 @@
 #include "article_writer.h"
 
 struct token_string {
-	const char *start;
+	char *start;
 	long length;
 };
 
@@ -25,7 +25,7 @@ public:
 private:
 //	std::string content;
 //	std::string& out;
-	const char *current;
+	char *current;
 	const char *previous;
 	article_writer *writer;
 	token_string current_token;
@@ -33,12 +33,14 @@ private:
 
 	int progress;
 
-	const char *start, *end;
+	char *start, *end;
 	const char *body_start;
 	const char *first_para;  // if
 	const char *first_section; // anything before the first section is abstract
 	const char *next_section;
 	const char *sec_start;
+	const char *para_start;
+	const char *next_para;
 
 public:
 	article_reader(const char *file);
