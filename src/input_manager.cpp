@@ -87,7 +87,7 @@ void input_manager::translate() {
 //				string trans = translator.translate(source->start, language_pair.c_str(), source->length);
 				string source_str(source->start, source->length);
 #ifdef DEBUG
-				cerr << "Read: " << source_str << endl;
+				cerr << source->tag << ": " << source_str << endl;
 #endif
 //				string trans = string();
 //				writer.fill(trans);

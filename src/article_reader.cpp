@@ -75,6 +75,7 @@ article_reader::~article_reader() {
 
 token_string *article_reader::get_next_token() {
 	process();
+	current_token.tag = current_tag.c_str();
 	return &current_token;
 }
 
@@ -87,6 +88,7 @@ token_string * article_reader::get_next_token(article_writer& the_writer) {
 
 	progress = COMMENT;
 	process();
+	current_token.tag = current_tag.c_str();
 	return &current_token;
 }
 
@@ -102,6 +104,10 @@ void article_reader::process() {
 		switch (progress) {
 		case COMMENT:
 			this->reconstruct_comment();
+			++progress;
+			break;
+		case DOCTYPE:
+			this->skip_doctype();
 			++progress;
 			break;
 		case TITLE:
@@ -157,6 +163,8 @@ void article_reader::read_title() {
 	static const char *TITLE_TAG_START = "<title>";
 	static const char *TITLE_TAG_END = "</title>";
 
+	current_tag = "title";
+
 	start = strstr(current, TITLE_TAG_START);
 	if (start != NULL) {
 		start += strlen(TITLE_TAG_START);
@@ -188,6 +196,7 @@ void article_reader::read_categories() {
 //	static const char *CATEGORY_TAG_END = "</category>";
 
 	read_element_text(CATEGORY_TAG);
+//	if (current_token.)
 
 	if (start == NULL) {
 		++progress;
@@ -211,6 +220,25 @@ void article_reader::read_main_text() {
 	read_section();
 //	while (next_section != NULL)
 //		read_section();
+}
+
+
+void article_reader::skip_doctype() {
+	static const char *DOCTYPE_TAG = "<!DOCTYPE";
+	start = strstr(current, DOCTYPE_TAG);
+	if (start != NULL) {
+		while (*start != '>' && *start != '\0' )
+			++start;
+//			start = strchr(++start, '>');
+		if (*start != '\0') {
+			++start;
+			current = start;
+		}
+		else {
+			string msg = string("The article is not well-formed, <!DOCTYPE missing >: ") + file_path;
+			throw msg.c_str();
+		}
+	}
 }
 
 void article_reader::skip_notes() {
@@ -418,15 +446,15 @@ void article_reader::read_element_text(const char* tag_name) {
 	string tag_start;
 	string tag_end;
 
-	current_tag = tag_name;
-
 	if (tag_name != NULL || strlen(tag_name) == 0) {
 		tag_start = string("<") + tag_name + string(">");
-		tag_end = string("</") + tag_name + string(">");;
+		tag_end = string("</") + tag_name + string(">");
+		current_tag = tag_name;
 	}
 	else {
 		tag_start = string("<");
 		tag_end = string("<");
+		current_tag = "";
 	}
 
 	start = strstr(current, tag_start.c_str());
@@ -434,17 +462,23 @@ void article_reader::read_element_text(const char* tag_name) {
 		start += strlen(tag_start.c_str());
 
 		if (start == "<") {
-			start = strchr(++start, '>');
-			if (start != NULL) {
+			while (*start != '>' && !isspace(*start))
+				current_tag.push_back(*start++);
+
+			while (*start != '>' && *start != '\0' )
 				++start;
-				while (isspace(*start))
-					++start;
+//			start = strchr(++start, '>');
+			if (*start != '\0') {
+				++start;
 			}
 			else {
 				string msg = string("The article is not well-formed, missing < or >: ") + file_path;
 				throw msg.c_str();
 			}
 		}
+
+		while (isspace(*start))
+			++start;
 
 		current_token.start = start;
 		copy_to_current(current, start);

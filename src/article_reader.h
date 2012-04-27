@@ -16,11 +16,12 @@
 struct token_string {
 	char *start;
 	long length;
+	const char *tag;
 };
 
 class article_reader : public article {
 public:
-	enum {COMMENT = -1, TITLE = 0, CATEGORIES = 1, ABSTRACT = 2, MAIN_TEXT = 3, NOTES = 4, REFERENCES = 5, EXTERNAL_LINKS = 6};
+	enum {COMMENT = -1, DOCTYPE = 0, TITLE = 1, CATEGORIES = 2, ABSTRACT = 3, MAIN_TEXT = 4, NOTES = 5, REFERENCES = 6, EXTERNAL_LINKS = 7};
 
 private:
 //	std::string content;
@@ -72,6 +73,7 @@ private:
 	void create_comment();
 	void reconstruct_comment();
 
+	void skip_doctype();
 	void skip_notes();
 	void skip_references();
 	void skip_external_links();
