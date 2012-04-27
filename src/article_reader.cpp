@@ -211,6 +211,7 @@ void article_reader::read_categories() {
 }
 
 void article_reader::read_abstract() {
+	static const char *PARA_TAG_START = "<p>";
 //	while (current < first_section) {
 //
 //	}
@@ -222,8 +223,30 @@ void article_reader::read_abstract() {
 		previous = current;
 	}
 
-	para_start = current;
+//	para_start = current;
 	read_para();
+
+	if (first_para > first_section) {
+		if (current >= first_section) {
+			++progress;
+		}
+	}
+	else {
+		para_start = strstr(current, PARA_TAG_START);
+		if (para_start > first_section)
+			++progress;
+	//	if (para_start == NULL || (next_para != NULL && current > next_para)) {
+//			if (next_para != NULL) {
+//				para_start = next_para;
+//			}
+//			else {
+//				para_start = strstr(current, PARA_TAG_START);
+//				next_para = strstr(para_start + strlen(PARA_TAG_START), PARA_TAG_START);
+//			}
+	}
+//		copy_to_current(current, para_start);
+//		current = para_start;
+//	}
 }
 
 void article_reader::read_main_text() {
@@ -380,7 +403,6 @@ void article_reader::read_section() {
  * const char *p_start, const char *p_end
  */
 void article_reader::read_para() {
-	static const char *PARA_TAG_START = "<p>";
 	static const char *IMAGE_TAG_END = "</image>";
 
 	while (isspace(*current))
@@ -423,13 +445,13 @@ void article_reader::read_para() {
 					while (*test_forward != '>' && !isspace(*test_forward))
 						this_tag.push_back(*test_forward++);
 
-					current = test_forward;
 					if (strcasecmp(this_tag.c_str(), "image") == 0) {
 						if (current_token.start != NULL) {
 							current_token.length = current - current_token.start;
 							break;
 						}
 
+						current = test_forward; // only here
 						while (*current != '>'  && *current != '\0'  )
 							++current;
 
@@ -446,6 +468,10 @@ void article_reader::read_para() {
 						if (current_token.length > 0)
 							break;
 					}
+					else if (strcasecmp(this_tag.c_str(), "table") == 0) {
+						while (current_token.length == 0 && current != '\0')
+							read_element_text(NULL);
+					}
 					else {
 						while (*current != '>')
 							*current++ = ' ';
@@ -454,7 +480,8 @@ void article_reader::read_para() {
 				}
 				else
 				{
-					current_token.start = current;
+					if (current_token.start == NULL)
+						current_token.start = current;
 					current++;
 				}
 			}
