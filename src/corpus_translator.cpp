@@ -13,7 +13,7 @@
 using namespace std;
 
 void usage(char *program) {
-	cerr << "Usage: " << program << " [-l:source_lang|target_lang] [-o:/a/path/for/output] /a/path/to/translation/corpus" << std::endl;
+	cerr << "Usage: " << program << " [-l:source_lang:target_lang] [-o:/a/path/for/output] /a/path/to/translation/corpus" << std::endl;
 	exit(-1);
 }
 
@@ -24,12 +24,19 @@ int main(int argc, char **argv) {
 	}
 	int param;
 	input_manager manager;
+	const char *p;
+	bool has_error_param;
 
 	for (param = 1; *argv[param] == '-'; param++)
 		{
-		if (strcmp(argv[param], "-l") == 0)
-			manager.set_language_pair(string(strchr(argv[param], ':') + 1));
-		if (strcmp(argv[param], "-o") == 0)
+		if (strncmp(argv[param], "-l", 2) == 0) {
+			p = strchr(argv[param], ':');
+			if (p)
+				manager.set_language_pair(p + 1);
+			else
+				has_error_param = true;
+		}
+		if (strncmp(argv[param], "-o", 2) == 0)
 			manager.set_out_path(string(strchr(argv[param], ':') + 1));
 //			lowercase_only = TRUE;
 //		else if (strcmp(argv[param], "-noyears") == 0)
@@ -50,9 +57,13 @@ int main(int argc, char **argv) {
 //			if (anchors_per_run <= 0)
 //				usage(argv[0]);
 //			}
-		else
-			usage(argv[0]);		// and exit
+//		else
+//					// and exit
+
 		}
+
+	if (has_error_param || param >= argc)
+		usage(argv[0]);
 
 	for (int i = 1; i < argc; ++i) {
 		manager.load(argv[0]);

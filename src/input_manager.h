@@ -1,3 +1,7 @@
+
+
+
+
 /*
  * input_manager.h
  *
@@ -16,7 +20,7 @@ private:
 	std::string input;
 	static std::string out_path;
 
-	static google_research_translator& translator;
+//	static google_research_translator& translator;
 
 	std::string language_pair;
 
@@ -31,7 +35,7 @@ public:
 	void load(const char *file);
 	void translate();
 
-	void set_language_pair(std::string language_pair);
+	void set_language_pair(const char *);
 	static void set_out_path(std::string out_path);
 	static std::string& get_out_path();
 

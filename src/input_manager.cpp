@@ -17,7 +17,7 @@
 
 using namespace std;
 
-google_research_translator& input_manager::translator = google_research_translator::get_instance();
+//google_research_translator& input_manager::translator = google_research_translator::get_instance();
 std::string input_manager::out_path = ".";
 
 input_manager::input_manager() {
@@ -51,8 +51,9 @@ void input_manager::cleanup() {
 		delete disk;
 }
 
-void input_manager::set_language_pair(std::string language_pair) {
-	this->language_pair = language_pair;
+void input_manager::set_language_pair(const char *language_pair) {
+//	this->language_pair = language_pair;
+	google_research_translator::set_lang_pair(language_pair);
 }
 
 void input_manager::load(const char* filename) {
@@ -80,7 +81,8 @@ void input_manager::translate() {
 
 	//			reader.copy_to_next_token(writer);
 				source = reader.get_next_token();
-				string trans = translator.translate(source->start, language_pair.c_str(), source->length);
+//				string trans = translator.translate(source->start, language_pair.c_str(), source->length);
+				string trans = string(source->start, source->length);
 				writer.fill(trans);
 			}
 			file = disk->next();

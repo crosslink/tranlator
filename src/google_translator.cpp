@@ -29,9 +29,14 @@ const char *google_translator::TEST_STRING_ZH = "\346\210\221"; // chinese chara
 
 std::string google_translator::api_key("");
 std::string google_translator::query_template("");
+std::string google_translator::query_lang_pair_template("");
+
 std::string google_translator::api_key_file("");
 std::string google_translator::source_lang_var("");
 std::string google_translator::target_lang_var("");
+
+std::string google_translator::source_lang("");
+std::string google_translator::target_lang("");
 
 const char *google_translator::GOOGLE_TRANSLATE_API_KEY_FILE = "key.txt";
 
@@ -101,6 +106,13 @@ void google_translator::init()
 	}
 }
 
+void google_translator::set_lang_pair(const char* language_pair) {
+	const char *pos = strchr(language_pair, ':');
+	source_lang = string(language_pair, pos);
+	target_lang = string(pos + 1);
+	add_lang_options(query_lang_pair_template);
+}
+
 bool google_translator::test_key() {
 	this->set_key();
 
@@ -118,7 +130,10 @@ std::string google_translator::translate(const char *text, const char *language_
 //		append_lp(url, language_pair);
 //		append_text(url, text);
 	add_text_option(url, text, length);
-	add_lang_options(url, language_pair);
+
+	url.append(query_lang_pair_template);
+
+//	add_lang_options(url, language_pair);
 	const char *content = webpage_retriever::instance().retrieve(url.c_str());
 
 	string result;
@@ -203,11 +218,11 @@ void google_translator::append_lp(std::string& url, const char *language_pair)
 	url.append(language_pair);
 }
 
-void google_translator::add_lang_options(std::string& url,const char *language_pair)
+void google_translator::add_lang_options(std::string& url)
 {
-	const char *pos = strchr(language_pair, '|');
-	string source_lang(language_pair, pos);
-	string target_lang(pos + 1);
+//	const char *pos = strchr(language_pair, ':');
+//	string source_lang(language_pair, pos);
+//	string target_lang(pos + 1);
 	url.append("&");
 	url.append(source_lang_var);
 	url.append("=");

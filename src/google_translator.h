@@ -37,9 +37,13 @@
 		static std::string api_key_file;
 
 		static std::string query_template;
+		static std::string query_lang_pair_template;
 
 		static std::string source_lang_var;
 		static std::string target_lang_var;
+
+		static std::string source_lang;
+		static std::string target_lang;
 
 	public:
 		google_translator();
@@ -52,12 +56,15 @@
 
 		google_translator& get_instance();
 
+		static void set_lang_pair(const char *langpair);
+
 	protected:
 
 		void append_text(std::string& url, const char *text, long length = 0);
 		void append_lp(std::string& url, const char *language_pair);
 
-		void add_lang_options(std::string& url, const char *language_pair);
+		static void add_lang_options(std::string& url);
+
 		void add_text_option(std::string& url, const char *text, long length = 0);
 
 //	private:
