@@ -20,7 +20,7 @@ struct token_string {
 
 class article_reader : public article {
 public:
-	enum {INIT = -1, TITLE = 0, CATEGORIES = 1, ABSTRACT = 2, MAIN_TEXT = 3, NOTES = 4, REFERENCES = 5, EXTERNAL_LINKS = 6};
+	enum {COMMENT = -1, TITLE = 0, CATEGORIES = 1, ABSTRACT = 2, MAIN_TEXT = 3, NOTES = 4, REFERENCES = 5, EXTERNAL_LINKS = 6};
 
 private:
 //	std::string content;

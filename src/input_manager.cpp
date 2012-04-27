@@ -77,14 +77,22 @@ void input_manager::translate() {
 			article_reader reader(file);
 			article_writer writer(file);
 	//		reader.copy_to_next_token(writer);
+
+			reader.read();
+
 			token_string *source = reader.get_next_token(writer);
 			while (source->length > 0) {
 
 	//			reader.copy_to_next_token(writer);
-				source = reader.get_next_token();
 //				string trans = translator.translate(source->start, language_pair.c_str(), source->length);
-				string trans = string(source->start, source->length);
-				writer.fill(trans);
+				string source_str(source->start, source->length);
+#ifdef DEBUG
+				cerr << "Read: " << source_str << endl;
+#endif
+//				string trans = string();
+//				writer.fill(trans);
+
+				source = reader.get_next_token();
 			}
 			file = disk->next();
 		}

@@ -42,7 +42,7 @@ void article_writer::fill(std::string more) {
 }
 
 void article_writer::fill(const char* more, size_t length) {
-	if (length > -1)
+	if ((long)length > -1)
 		out_content.append(more, length);
 	else
 		out_content.append(more);
