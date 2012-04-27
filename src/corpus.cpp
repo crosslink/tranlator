@@ -21,12 +21,12 @@ using namespace std;
 
 #define CROSSLINK 1
 
-corpus::corpus() : doclist_("doclist.aspt")
+corpus::corpus() //: doclist_("doclist.aspt")
 {
 	init();
 }
 
-corpus::corpus(const char *doclist) : doclist_(doclist)
+corpus::corpus(const char *corpus_home) : home_(corpus_home)// : doclist_(doclist)
 {
 	init();
 }
@@ -38,6 +38,7 @@ corpus::~corpus()
 
 void corpus::init()
 {
+	doclist_ = "doclist.aspt";
 	load_ = false;
 }
 

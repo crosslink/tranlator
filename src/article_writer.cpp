@@ -53,4 +53,9 @@ void article_writer::initialize_output_corpus() {
 
 }
 
+void article_writer::initialize_output_corpus(const char* out_path) {
+	out.home(out_path);
+}
+
+
 

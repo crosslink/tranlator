@@ -18,7 +18,7 @@
 using namespace std;
 
 //google_research_translator& input_manager::translator = google_research_translator::get_instance();
-std::string input_manager::out_path = ".";
+std::string input_manager::out_path;
 
 input_manager::input_manager() {
 	init();
@@ -35,6 +35,7 @@ input_manager::~input_manager() {
 
 void input_manager::set_out_path(std::string path) {
 	out_path = path;
+	article_writer::initialize_output_corpus(out_path.c_str());
 }
 
 std::string& input_manager::get_out_path() {
@@ -43,7 +44,7 @@ std::string& input_manager::get_out_path() {
 
 void input_manager::init() {
 	disk = NULL;
-
+	set_out_path(".");
 }
 
 void input_manager::cleanup() {
