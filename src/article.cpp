@@ -46,7 +46,7 @@ std::string article::id2dir(unsigned long id) {
 	return stm.str();
 }
 
-int article::file2id(const char* file) {
+std::string article::file2name(const char* file) {
 	string sname(file);
 	//string::size_type pos = name ;
 //	string part(sname, base_.size());
@@ -55,9 +55,14 @@ int article::file2id(const char* file) {
 	if (pos != string::npos)
 		sname.erase(0, pos);
 	pos = sname.find('.');
+	ext = sname.substr(pos + 1);
 	if (pos != string::npos)
 		sname.erase(pos);
-	return atoi(sname.c_str());
+	return sname;
+}
+
+int article::file2id(const char* name) {
+	return atoi(name);
 }
 
 

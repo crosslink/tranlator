@@ -37,6 +37,8 @@
 		virtual ~corpus();
 
 		void home(std::string path) { home_ = path; }
+		std::string& home() { return home_; }
+
 		void base(std::string path) { base_ = path; }
 		void teara_home(std::string path) { teara_home_ = path; }
 		void load();

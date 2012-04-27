@@ -9,6 +9,7 @@
 #include "input_manager.h"
 
 #include <string>
+#include <ctype.h>
 
 using namespace std;
 
@@ -19,10 +20,17 @@ article_writer::article_writer(const char *file) {
 }
 
 void article_writer::create_output_file(const char* file) {
-	int id = file2id(file);
-//	string id_str = id2dir(id);
+	name = file2name(file);
+	if (name.length() > 0 && isdigit(name[0])) {
 
-	file_path = out.id2docpath(id);
+		int id = file2id(file);
+	//	string id_str = id2dir(id);
+
+		file_path = out.id2docpath(id);
+	}
+	else {
+		file_path = out.home() + name + "." + ext;
+	}
 }
 
 article_writer::~article_writer() {
@@ -41,7 +49,7 @@ void article_writer::fill(const char* more, size_t length) {
 }
 
 void article_writer::initialize_output_corpus() {
-	out.base(input_manager::get_out_path());
+	out.home(input_manager::get_out_path());
 
 }
 
