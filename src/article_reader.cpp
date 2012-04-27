@@ -199,6 +199,7 @@ void article_reader::read_categories() {
 //	if (current_token.)
 
 	if (start == NULL) {
+		wrap_up_to_body();
 		++progress;
 	}
 	else
@@ -213,7 +214,14 @@ void article_reader::read_abstract() {
 //	while (current < first_section) {
 //
 //	}
-	wrap_up_to_body();
+	while (isspace(*current))
+		++current;
+
+	if (previous != current) {
+		copy_to_current(previous, current);
+		previous = current;
+	}
+
 	para_start = current;
 	read_para();
 }
@@ -373,54 +381,68 @@ void article_reader::read_section() {
  */
 void article_reader::read_para() {
 	static const char *PARA_TAG_START = "<p>";
+	static const char *IMAGE_TAG_END = "</image>";
 
 	while (isspace(*current))
 		++current;
-	copy_to_current(previous, current);
-	previous = current;
 
-	if (para_start == NULL || (next_para != NULL && current > next_para)) {
-		if (next_para != NULL) {
-			para_start = next_para;
-		}
-		else {
-			para_start = strstr(current, PARA_TAG_START);
-			next_para = strstr(para_start + strlen(PARA_TAG_START), PARA_TAG_START);
-		}
-
-//		copy_to_current(current, para_start);
-//		current = para_start;
+	if (previous != current) {
+		copy_to_current(previous, current);
+		previous = current;
 	}
 
-//	if ((para_start != NULL && next_para == NULL) || (para_start != NULL && para_start < next_para)) {
-		if ((para_start != NULL && current < para_start) ||
-				(para_start == NULL && current < next_para) ||
-				(para_start == NULL && next_para == NULL)) {
-			while (current_token.length == 0)
-				read_element_text(NULL);
-		}
-		else {
+//	if (para_start == NULL || (next_para != NULL && current > next_para)) {
+//		if (next_para != NULL) {
+//			para_start = next_para;
+//		}
+//		else {
+//			para_start = strstr(current, PARA_TAG_START);
+//			next_para = strstr(para_start + strlen(PARA_TAG_START), PARA_TAG_START);
+//		}
+//
+////		copy_to_current(current, para_start);
+////		current = para_start;
+//	}
+//
+////	if ((para_start != NULL && next_para == NULL) || (para_start != NULL && para_start < next_para)) {
+//		if ((para_start != NULL && current <= para_start) ||
+//				(para_start == NULL && next_para != NULL && current < next_para) ||
+//				(para_start == NULL && next_para == NULL)) {
+//			while (current_token.length == 0)
+//				read_element_text(NULL);
+//		}
+//		else {
 			string this_tag("");
-			const char *test_forward;
+			char *test_forward;
 			while (*current != '\0')
 				{
 				if (*current == '<')			// then remove the XML tags
 				{
 					test_forward = current;
+					++test_forward;
 					while (*test_forward != '>' && !isspace(*test_forward))
 						this_tag.push_back(*test_forward++);
 
+					current = test_forward;
 					if (strcasecmp(this_tag.c_str(), "image") == 0) {
 						if (current_token.start != NULL) {
 							current_token.length = current - current_token.start;
 							break;
 						}
 
-						previous = current;
-						while (*current != '>')
+						while (*current != '>'  && *current != '\0'  )
 							++current;
+
+						if (*current != '\0') {
+							++current;
+						}
 						copy_to_current(previous, current);
 						read_element_text(NULL);
+
+						previous = current;
+						start = strstr(current, IMAGE_TAG_END);
+						if (start != NULL)
+							current = start + strlen(IMAGE_TAG_END);
 						if (current_token.length > 0)
 							break;
 					}
@@ -436,7 +458,7 @@ void article_reader::read_para() {
 					current++;
 				}
 			}
-		}
+//		}
 //	}
 
 
@@ -450,7 +472,7 @@ void article_reader::read_element_text(const char* tag_name) {
 	string tag_start;
 	string tag_end;
 
-	if (tag_name != NULL || strlen(tag_name) == 0) {
+	if (tag_name != NULL && strlen(tag_name) > 0) {
 		tag_start = string("<") + tag_name + string(">");
 		tag_end = string("</") + tag_name + string(">");
 		current_tag = tag_name;
@@ -463,9 +485,9 @@ void article_reader::read_element_text(const char* tag_name) {
 
 	start = strstr(current, tag_start.c_str());
 	if (start != NULL) {
-		start += strlen(tag_start.c_str());
+		start += tag_start.length();
 
-		if (start == "<") {
+		if (tag_start == "<") {
 			while (*start != '>' && !isspace(*start))
 				current_tag.push_back(*start++);
 
@@ -492,7 +514,10 @@ void article_reader::read_element_text(const char* tag_name) {
 		if (end != NULL) {
 			previous = current;
 			current_token.length = end - start;
-			current = end += strlen(tag_end.c_str());
+			if (tag_end != "<")
+				current = end += tag_end.length();
+			else
+				current = end;
 		}
 	}
 
