@@ -200,7 +200,6 @@ void article_reader::read_categories() {
 
 	if (start == NULL) {
 		++progress;
-		wrap_up_to_body();
 	}
 	else
 		if (end == NULL) {
@@ -211,9 +210,12 @@ void article_reader::read_categories() {
 }
 
 void article_reader::read_abstract() {
-	while (current < first_section) {
-
-	}
+//	while (current < first_section) {
+//
+//	}
+	wrap_up_to_body();
+	para_start = current;
+	read_para();
 }
 
 void article_reader::read_main_text() {
@@ -374,6 +376,8 @@ void article_reader::read_para() {
 
 	while (isspace(*current))
 		++current;
+	copy_to_current(previous, current);
+	previous = current;
 
 	if (para_start == NULL || (next_para != NULL && current > next_para)) {
 		if (next_para != NULL) {
@@ -501,9 +505,7 @@ void article_reader::wrap_up_to_body() {
 
 	start = strstr(current, BODY_TAG_START);
 	if (start != NULL) {
-//		start += strlen(BODY_TAG_START);
-//		while (isspace(*start))
-//			++start;
+		start += strlen(BODY_TAG_START);
 
 		current = start;
 		copy_to_current(previous, current);
