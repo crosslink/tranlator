@@ -19,6 +19,10 @@ article_writer::article_writer(const char *file) : article() {
 	create_output_file(file);
 }
 
+void article_writer::write() {
+	article::write(out_content.c_str());
+}
+
 void article_writer::create_output_file(const char* file) {
 	name = file2name(file);
 	if (name.length() > 0 && isdigit(name[0])) {

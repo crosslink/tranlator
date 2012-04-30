@@ -17,7 +17,8 @@
 
 using namespace std;
 
-//google_research_translator& input_manager::translator = google_research_translator::get_instance();
+#define ENABLE_TRANSLATOR 1
+
 std::string input_manager::out_path;
 
 input_manager::input_manager() {
@@ -71,6 +72,9 @@ void input_manager::load(const char* filename) {
 }
 
 void input_manager::translate() {
+#ifdef ENABLE_TRANSLATOR
+	static google_research_translator& translator = google_research_translator::get_instance();
+#endif
 	const char *file = disk->first();
 	try {
 		while (file != NULL && strlen(file) > 0) {
@@ -84,7 +88,6 @@ void input_manager::translate() {
 			while (source->length > 0) {
 
 	//			reader.copy_to_next_token(writer);
-//				string trans = translator.translate(source->start, language_pair.c_str(), source->length);
 				char *source_string = new char [source->length + 1];
 				memcpy(source_string, source->start, source->length);
 				source_string[source->length] = '\0';
@@ -92,11 +95,15 @@ void input_manager::translate() {
 #ifdef DEBUG
 				cerr << source->tag << ": " << source_string << endl;
 #endif
+#ifdef ENABLE_TRANSLATOR
 //				string trans = string();
-//				writer.fill(trans);
+				string trans = translator.translate(source_string);
+				writer.fill(trans);
+#endif
 				delete [] source_string;
 				source = reader.get_next_token();
 			}
+			writer.write();
 			file = disk->next();
 		}
 	}

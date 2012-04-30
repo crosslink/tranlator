@@ -24,6 +24,7 @@ public:
 
 	virtual void read();
 	virtual void write();
+	virtual void write(const char *content);
 
 	static std::string id2dir(unsigned long id);
 	static int file2id(const char *file);

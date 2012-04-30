@@ -49,7 +49,7 @@
 		google_translator();
 		virtual ~google_translator();
 
-		std::string translate(const char *text, const char *language_pair, long length = -1);
+		std::string translate(const char *text, long length = -1);
 		static bool has_valid_key();
 
 		virtual std::string get_translation(const char *content);

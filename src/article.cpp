@@ -46,6 +46,10 @@ std::string article::id2dir(unsigned long id) {
 	return stm.str();
 }
 
+void article::write(const char* this_content) {
+	sys_file::write(this_content, file_path.c_str());
+}
+
 std::string article::file2name(const char* file) {
 	string sname(file);
 	//string::size_type pos = name ;

@@ -21,8 +21,8 @@ using namespace std;
 
 //	const char *google_translator::GOOGLE_TRANSLATE_URL_TEMPLATE = "http://translate.google.com/?oe=utf8"; //&langpair=en|zh&text=dahuangshan
 const char *google_translator::GOOGLE_TRANSLATE_URL_TEMPLATE = "https://www.googleapis.com/language/translate/v2?key=%s";
-const char *google_translator::LANGUAGE_PAIR_EN_CT = "en|zh-TW";
-const char *google_translator::LANGUAGE_PAIR_EN_CS = "en|zh-CN";
+const char *google_translator::LANGUAGE_PAIR_EN_CT = "en:zh-TW";
+const char *google_translator::LANGUAGE_PAIR_EN_CS = "en:zh-CN";
 
 const char *google_translator::TEST_STRING_EN = "I";
 const char *google_translator::TEST_STRING_ZH = "\346\210\221"; // chinese character for "I"
@@ -115,8 +115,13 @@ void google_translator::set_lang_pair(const char* language_pair) {
 
 bool google_translator::test_key() {
 	this->set_key();
+	string old_source_lang = source_lang;
+	string old_target_lang = target_lang;
+	set_lang_pair(LANGUAGE_PAIR_EN_CS);
+	string result = translate(TEST_STRING_EN);
 
-	string result = translate(TEST_STRING_EN, LANGUAGE_PAIR_EN_CS);
+	source_lang = old_source_lang;
+	target_lang = old_target_lang;
 	return result == TEST_STRING_ZH;
 }
 
@@ -124,7 +129,7 @@ bool google_translator::has_valid_key() {
 	return key_status == KEY_VALID;
 }
 
-std::string google_translator::translate(const char *text, const char *language_pair, long length)
+std::string google_translator::translate(const char *text, long length)
 {
 	string url(query_template);
 //		append_lp(url, language_pair);
