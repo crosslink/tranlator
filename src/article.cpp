@@ -17,6 +17,7 @@ using namespace std;
 
 
 article::article() {
+	content = NULL;
 }
 
 article::article(const char *file) : file_path(file) {

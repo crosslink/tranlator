@@ -45,6 +45,8 @@
 		static std::string source_lang;
 		static std::string target_lang;
 
+		static bool to_test_key;
+
 	public:
 		google_translator();
 		virtual ~google_translator();
@@ -56,7 +58,7 @@
 
 		google_translator& get_instance();
 
-		static void set_lang_pair(const char *langpair);
+		void set_lang_pair(const char *langpair);
 
 	protected:
 

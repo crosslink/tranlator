@@ -9,6 +9,7 @@
 #include "webpage_retriever.h"
 #include "string_utils.h"
 #include "sys_file.h"
+#include "urlcode.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -41,6 +42,7 @@ std::string google_translator::target_lang("");
 const char *google_translator::GOOGLE_TRANSLATE_API_KEY_FILE = "key.txt";
 
 int google_translator::key_status =  google_translator::KEY_UNKNOWN;
+bool google_translator::to_test_key = false;
 
 google_translator::google_translator()
 {
@@ -57,7 +59,8 @@ void google_translator::init_once() {
 		const char *key_text = sys_file::read_entire_file(api_key_file.c_str());
 		if (key_text != NULL) {
 			api_key = key_text;
-			if (test_key())
+			this->set_key();
+			if ((!to_test_key) || test_key())
 				key_status = KEY_VALID;
 			else
 				key_status = KEY_INVALID;
@@ -110,11 +113,11 @@ void google_translator::set_lang_pair(const char* language_pair) {
 	const char *pos = strchr(language_pair, ':');
 	source_lang = string(language_pair, pos);
 	target_lang = string(pos + 1);
+	query_lang_pair_template.clear();
 	add_lang_options(query_lang_pair_template);
 }
 
 bool google_translator::test_key() {
-	this->set_key();
 	string old_source_lang = source_lang;
 	string old_target_lang = target_lang;
 	set_lang_pair(LANGUAGE_PAIR_EN_CS);
@@ -240,10 +243,14 @@ void google_translator::add_lang_options(std::string& url)
 
 void google_translator::add_text_option(std::string& url, const char *text, long length)
 {
+	char *copy = strdup(text);
+	char *encoded_text = url_encode(copy);
 	url.append("&q=");
 	if (length > -1)
-		url.append(text, length);
+		url.append(encoded_text, length);
 	else
-		url.append(text);
+		url.append(encoded_text);
+	free(encoded_text);
+	free(copy);
 }
 

@@ -17,7 +17,7 @@
 
 using namespace std;
 
-#define ENABLE_TRANSLATOR 1
+#define ENABLE_TRANSLATOR 0
 
 std::string input_manager::out_path;
 
@@ -54,8 +54,7 @@ void input_manager::cleanup() {
 }
 
 void input_manager::set_language_pair(const char *language_pair) {
-//	this->language_pair = language_pair;
-	google_research_translator::set_lang_pair(language_pair);
+	this->language_pair = language_pair;
 }
 
 void input_manager::load(const char* filename) {
@@ -72,8 +71,9 @@ void input_manager::load(const char* filename) {
 }
 
 void input_manager::translate() {
-#ifdef ENABLE_TRANSLATOR
+#if ENABLE_TRANSLATOR == 1
 	static google_research_translator& translator = google_research_translator::get_instance();
+	translator.set_lang_pair(language_pair.c_str());
 #endif
 	const char *file = disk->first();
 	try {
@@ -95,9 +95,12 @@ void input_manager::translate() {
 #ifdef DEBUG
 				cerr << source->tag << ": " << source_string << endl;
 #endif
-#ifdef ENABLE_TRANSLATOR
+#if ENABLE_TRANSLATOR == 1
 //				string trans = string();
 				string trans = translator.translate(source_string);
+#ifdef DEBUG
+				cerr << source->tag << " (Translation): " << trans << endl;
+#endif
 				writer.fill(trans);
 #endif
 				delete [] source_string;
