@@ -76,7 +76,7 @@ private:
 	void read_para();
 
 	void after_reading_abstract();
-//	void after_reading_a_para();
+	void after_reading_a_para();
 	void after_reading_a_section();
 
 	void create_comment();

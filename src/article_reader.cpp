@@ -213,13 +213,7 @@ void article_reader::read_abstract() {
 //	while (current < first_section) {
 //
 //	}
-	while (isspace(*current))
-		++current;
-
-	if (previous != current) {
-		copy_to(previous, current);
-		previous = current;
-	}
+	copy_to_current();
 
 //	para_start = current;
 
@@ -231,26 +225,15 @@ void article_reader::read_abstract() {
 		}
 	}
 	else {
-		para_start = strstr(current, PARA_TAG_START);
-
 		if (para_start > first_section) {
 			after_reading_abstract();
 			return;
 		}
 
-		next_para = strstr(para_start + strlen(PARA_TAG_START), PARA_TAG_START);
-		if (next_para == NULL) {
-			next_para = strstr(para_start + strlen(PARA_TAG_END), PARA_TAG_END);
-
-			if (next_para == NULL) {
-				string msg = string("The article is not well-formed, <p> missing </p>: ") + file_path;
-				throw msg.c_str();
-			}
-		}
-
 	}
 
 	read_para();
+	after_reading_a_para();
 }
 
 
@@ -447,7 +430,8 @@ void article_reader::after_reading_a_section() {
 	sec_start = strstr(current, SECTION_TAG_START);
 	if (sec_start != NULL) {
 		copy_to_current();
-		current = sec_start;
+		copy_to(current, sec_start);
+		current = (char *)sec_start;
 
 		para_start = sec_start + strlen(SECTION_TAG_START);
 		next_section = strstr(para_start /*+ strlen(SECTION_TAG_START)*/, SECTION_TAG_START);
@@ -576,6 +560,20 @@ void article_reader::read_para() {
 //		string_clean(current_token);
 }
 
+
+void article_reader::after_reading_a_para() {
+	para_start = strstr(current, PARA_TAG_START);
+	next_para = strstr(para_start + strlen(PARA_TAG_START), PARA_TAG_START);
+	if (next_para == NULL) {
+		next_para = strstr(para_start + strlen(PARA_TAG_END), PARA_TAG_END);
+
+		if (next_para == NULL) {
+			string msg = string("The article is not well-formed, <p> missing </p>: ") + file_path;
+			throw msg.c_str();
+		}
+	}
+}
+
 void article_reader::read_element_text(const char* tag_name) {
 	string tag_start;
 	string tag_end;
@@ -659,6 +657,9 @@ void article_reader::copy_to(const char *start, const char *end) {
 }
 
 void article_reader::copy_to_current() {
+	while (isspace(*current))
+		++current;
+
 	if (previous != current) {
 		writer->fill(previous, current - previous);
 		previous = current;
