@@ -466,6 +466,7 @@ void article_reader::read_para() {
 		if (current >= next_para) {
 			if (current_token.start != NULL)
 				current_token.length = current - current_token.start;
+			previous = current;
 			break;
 		}
 
