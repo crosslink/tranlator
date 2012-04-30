@@ -375,32 +375,19 @@ void article_reader::read_section() {
 
 //	const char *sec_start;
 	copy_to_current();
-	if (sec_start != NULL /*|| (next_section != NULL && current > next_section)*/) {
-//		if (next_section != NULL) {
-//			sec_start = next_section;
-//		}
-//		else {
-//			sec_start = strstr(current, SECTION_TAG_START);
-//		}
-
-//		if (previous != current) {
-//			copy_to(previous, current);
-//			previous = current;
-//		}
-//		copy_to(current, sec_start);
-//		current = (char *)sec_start;
-
+	if (sec_start != NULL) {
 		if (sec_start == current) {
 			// the first st is the section title of current section
 			read_element_text("st");
-			current_tag.erase(remove_if(current_tag.begin(), current_tag.end(), (int(*)(int))isspace), current_tag.end());
-			if (strncasecmp(current_tag.c_str(), NOTES_TEXT, strlen(NOTES_TEXT)) == 0)
+			string section_title(current_token.start, current_token.length);
+			section_title.erase(remove_if(section_title.begin(), section_title.end(), (int(*)(int))isspace), section_title.end());
+			if (strncasecmp(section_title.c_str(), NOTES_TEXT, strlen(NOTES_TEXT)) == 0)
 				progress = NOTES; //skip_notes();
-			else if ((strncasecmp(current_tag.c_str(), REFERENCES_TEXT, strlen(REFERENCES_TEXT)) == 0))
+			else if ((strncasecmp(section_title.c_str(), REFERENCES_TEXT, strlen(REFERENCES_TEXT)) == 0))
 				progress = REFERENCES; //skip_references();
-			else if ((strncasecmp(current_tag.c_str(), REFERENCES_TEXT2, strlen(REFERENCES_TEXT)) == 0))
+			else if ((strncasecmp(section_title.c_str(), REFERENCES_TEXT2, strlen(REFERENCES_TEXT)) == 0))
 				progress = REFERENCES;
-			else if (strncasecmp(current_tag.c_str(), EXTERNAL_LINKS_TEXT, strlen(EXTERNAL_LINKS_TEXT)) == 0)
+			else if (strncasecmp(section_title.c_str(), EXTERNAL_LINKS_TEXT, strlen(EXTERNAL_LINKS_TEXT)) == 0)
 				progress = EXTERNAL_LINKS; //skip_external_links();
 			else {
 				if (current_token.length == 0) {
@@ -414,12 +401,6 @@ void article_reader::read_section() {
 					return;
 				}
 			}
-//			{
-//
-//				if (current_token.length != 0)
-//					return;
-//
-//			}
 		}
 		else {
 			if (para_start != NULL && para_start < next_section) {
@@ -477,7 +458,6 @@ void article_reader::read_para() {
 	current_tag = "paragraph";
 	copy_to_current();
 
-	string this_tag("");
 	char *test_forward;
 	bool end_tag = false;
 	while (*current != '\0') {
@@ -491,7 +471,7 @@ void article_reader::read_para() {
 		if (*current == '<')			// then remove the XML tags
 		{
 			test_forward = current;
-			while (isspace(*test_forward))
+			while (isspace(*(++test_forward)))
 				++test_forward;
 			if (*test_forward == '\/') {
 				++test_forward;
@@ -499,18 +479,32 @@ void article_reader::read_para() {
 					++test_forward;
 				end_tag = true;
 			}
-			++test_forward;
+//			++test_forward;
+			string this_tag("");
 			while (*test_forward != '>' && !isspace(*test_forward))
 				this_tag.push_back(*test_forward++);
 
-			if (strcasecmp(this_tag.c_str(), "p") == 0) { // keep the p tags
+			if (strcasecmp(this_tag.c_str(), "sec") == 0) {
 				if (end_tag) {
 					previous = current;
+					if (current_token.start != NULL)
+						current_token.length = current - current_token.start;
+					current += strlen(SECTION_TAG_END);
+					after_reading_a_section();
+					break;
+				}
+			}
+			else if (strcasecmp(this_tag.c_str(), "p") == 0) { // keep the p tags
+				if (end_tag) {
+					previous = current;
+					current_token.length = current - current_token.start;
 					current += strlen(PARA_TAG_END);
 					break;
 				}
-				else
+				else {
+					current += strlen(PARA_TAG_START);
 					copy_to_current();
+				}
 			}
 			else if (strcasecmp(this_tag.c_str(), "image") == 0) {
 //						current_tag = "image";
@@ -693,14 +687,21 @@ void article_reader::copy_to_section_end() {
 
 	static const char *SECTION_TAG_END = "</sec>";
 	const char *section_end = NULL;
-	if (start != NULL) {
-		section_end = strstr(start, SECTION_TAG_END);
+//	if (current != NULL) {
+		section_end = strstr(current, SECTION_TAG_END);
 		if (section_end != NULL) {
 			section_end += strlen(SECTION_TAG_END);
-			copy_to(start, section_end);
 			current = (char *)section_end;
+			copy_to_current();
+			after_reading_a_section();
+//			copy_to(start, section_end);
+//			current = (char *)section_end;
 		}
-	}
+		else {
+			string msg = string("The article is not well-formed, <sec> missing </sec>: ") + file_path;
+			throw msg.c_str();
+		}
+//	}
 }
 
 

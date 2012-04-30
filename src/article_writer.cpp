@@ -15,7 +15,7 @@ using namespace std;
 
 corpus article_writer::out;
 
-article_writer::article_writer(const char *file) {
+article_writer::article_writer(const char *file) : article() {
 	create_output_file(file);
 }
 
