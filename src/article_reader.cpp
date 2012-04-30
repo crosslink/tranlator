@@ -233,7 +233,7 @@ void article_reader::read_abstract() {
 	}
 
 	read_para();
-	after_reading_a_para();
+
 }
 
 
@@ -374,6 +374,7 @@ void article_reader::read_section() {
 
 
 //	const char *sec_start;
+	copy_to_current();
 	if (sec_start != NULL /*|| (next_section != NULL && current > next_section)*/) {
 //		if (next_section != NULL) {
 //			sec_start = next_section;
@@ -401,8 +402,18 @@ void article_reader::read_section() {
 				progress = REFERENCES;
 			else if (strncasecmp(current_tag.c_str(), EXTERNAL_LINKS_TEXT, strlen(EXTERNAL_LINKS_TEXT)) == 0)
 				progress = EXTERNAL_LINKS; //skip_external_links();
-			else
-				read_para();
+			else {
+				if (current_token.length == 0) {
+					if (current == para_start)
+						read_para();
+					else
+						read_element_text();
+				}
+				else {
+					after_reading_a_para();
+					return;
+				}
+			}
 //			{
 //
 //				if (current_token.length != 0)
@@ -411,8 +422,13 @@ void article_reader::read_section() {
 //			}
 		}
 		else {
-			if (para_start != NULL && para_start < next_section)
-				read_para();
+			if (para_start != NULL && para_start < next_section) {
+				copy_to_current();
+				if (current == para_start)
+					read_para();
+				else
+					read_element_text();
+			}
 			else {
 //				para_start = NULL;
 				after_reading_a_section();
@@ -459,117 +475,124 @@ void article_reader::read_para() {
 	static const char *IMAGE_TAG_END = "</image>";
 
 	current_tag = "paragraph";
+	copy_to_current();
 
-	while (isspace(*current))
-		++current;
+	string this_tag("");
+	char *test_forward;
+	bool end_tag = false;
+	while (*current != '\0') {
 
-	if (previous != current) {
-		copy_to(previous, current);
-		previous = current;
-	}
+		if (current >= next_para) {
+			if (current_token.start != NULL)
+				current_token.length = current - current_token.start;
+			break;
+		}
 
-//	if (para_start == NULL || (next_para != NULL && current > next_para)) {
-//		if (next_para != NULL) {
-//			para_start = next_para;
-//		}
-//		else {
-//			para_start = strstr(current, PARA_TAG_START);
-//			next_para = strstr(para_start + strlen(PARA_TAG_START), PARA_TAG_START);
-//		}
-//
-////		copy_to(current, para_start);
-////		current = para_start;
-//	}
-//
-////	if ((para_start != NULL && next_para == NULL) || (para_start != NULL && para_start < next_para)) {
-//		if ((para_start != NULL && current <= para_start) ||
-//				(para_start == NULL && next_para != NULL && current < next_para) ||
-//				(para_start == NULL && next_para == NULL)) {
-//			while (current_token.length == 0)
-//				read_element_text(NULL);
-//		}
-//		else {
-			string this_tag("");
-			char *test_forward;
-			while (*current != '\0')
-				{
+		if (*current == '<')			// then remove the XML tags
+		{
+			test_forward = current;
+			while (isspace(*test_forward))
+				++test_forward;
+			if (*test_forward == '\/') {
+				++test_forward;
+				while (isspace(*test_forward))
+					++test_forward;
+				end_tag = true;
+			}
+			++test_forward;
+			while (*test_forward != '>' && !isspace(*test_forward))
+				this_tag.push_back(*test_forward++);
 
-				if (current >= next_para) {
-					if (current_token.start != NULL)
-						current_token.length = current - current_token.start;
+			if (strcasecmp(this_tag.c_str(), "p") == 0) { // keep the p tags
+				if (end_tag) {
+					previous = current;
+					current += strlen(PARA_TAG_END);
+					break;
+				}
+				else
+					copy_to_current();
+			}
+			else if (strcasecmp(this_tag.c_str(), "image") == 0) {
+//						current_tag = "image";
+				if (end_tag) {
+					while (*current != '>'  && *current != '\0'  )
+						++current;
+					if (*current != '\0') {
+						++current;
+					}
 					break;
 				}
 
-				if (*current == '<')			// then remove the XML tags
-				{
-					test_forward = current;
-					++test_forward;
-					while (*test_forward != '>' && !isspace(*test_forward))
-						this_tag.push_back(*test_forward++);
+				if (current_token.start != NULL) {
+					current_token.length = current - current_token.start;
+					break;
+				}
 
-					if (strcasecmp(this_tag.c_str(), "image") == 0) {
-//						current_tag = "image";
-						if (current_token.start != NULL) {
-							current_token.length = current - current_token.start;
-							break;
-						}
+				current = test_forward; // only here
+				while (*current != '>'  && *current != '\0'  )
+					++current;
 
-						current = test_forward; // only here
-						while (*current != '>'  && *current != '\0'  )
-							++current;
+				if (*current != '\0') {
+					++current;
+				}
 
-						if (*current != '\0') {
-							++current;
-						}
-						copy_to(previous, current);
-						read_element_text(NULL);
+				if (!end_tag) {
+					copy_to(previous, current);
+					read_element_text(NULL);
 
-						previous = current;
-						start = strstr(current, IMAGE_TAG_END);
-						if (start != NULL)
-							current = start + strlen(IMAGE_TAG_END);
-						if (current_token.length > 0)
-							break;
-					}
+					previous = current;
+					start = strstr(current, IMAGE_TAG_END);
+					if (start != NULL)
+						current = start + strlen(IMAGE_TAG_END);
+					if (current_token.length > 0)
+						break;
+				}
+				else
+					break;
+			}
 //					else if (strcasecmp(this_tag.c_str(), "table") == 0) {
 //						while (current_token.length == 0 && current != '\0')
 //							read_element_text(NULL);
 //					}
-					else {
-						while (*current != '>')
-							*current++ = ' ';
-						*current++ = ' ';
-					}
-				}
-				else
-				{
-					if (current_token.start == NULL)
-						current_token.start = current;
-					current++;
-				}
+			else {
+				while (*current != '>')
+					*current++ = ' ';
+				*current++ = ' ';
 			}
+		}
+		else
+		{
+			if (current_token.start == NULL)
+				current_token.start = current;
+			current++;
+		}
+	}
 
-			para_start = current;
-//		}
-//	}
-
-
-//	read_element_text("p");
-//	for (int i = 0; i < current_token)
-//	if (current_token.length > 0)
-//		string_clean(current_token);
+//			para_start = current;
+	after_reading_a_para();
 }
 
 
 void article_reader::after_reading_a_para() {
-	para_start = strstr(current, PARA_TAG_START);
-	next_para = strstr(para_start + strlen(PARA_TAG_START), PARA_TAG_START);
-	if (next_para == NULL) {
-		next_para = strstr(para_start + strlen(PARA_TAG_END), PARA_TAG_END);
+//	copy_to_current();
+	while (isspace(*current))
+		++current;
 
+	para_start = strstr(current, PARA_TAG_START);
+
+	if (current < para_start) {
+		next_para = para_start;
+		para_start = current;
+	}
+	else {
+		next_para = strstr(para_start + strlen(PARA_TAG_START), PARA_TAG_START);
 		if (next_para == NULL) {
-			string msg = string("The article is not well-formed, <p> missing </p>: ") + file_path;
-			throw msg.c_str();
+			next_para = strstr(para_start + strlen(PARA_TAG_END), PARA_TAG_END);
+
+			if (next_para == NULL) {
+				string msg = string("The article is not well-formed, <p> missing </p>: ") + file_path;
+				throw msg.c_str();
+			}
 		}
 	}
 }

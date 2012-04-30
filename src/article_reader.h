@@ -64,7 +64,7 @@ private:
 	void init_token();
 	void process();
 
-	void read_element_text(const char *tag_name);
+	void read_element_text(const char *tag_name = NULL);
 
 	void read_title();
 	void read_categories();
