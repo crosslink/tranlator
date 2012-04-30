@@ -22,7 +22,7 @@ using namespace std;
 const char *article_reader::PARA_TAG_START = "<p>";
 const char *article_reader::PARA_TAG_END = "</p>";
 const char *article_reader::SECTION_TAG_START = "<sec>";
-
+const char *article_reader::SECTION_TAG_END = "</sec>";
 /*
  *
  *
@@ -255,14 +255,10 @@ void article_reader::read_abstract() {
 
 
 void article_reader::after_reading_abstract() {
-	sec_start = first_section;
-	para_start = sec_start + strlen(SECTION_TAG_START);
-	while (isspace(*para_start)) {
-		++para_start;
-	}
+//	sec_start = first_section;
 
-
-	next_section = strstr(para_start, SECTION_TAG_START);
+	after_reading_a_section();
+//	next_section = strstr(para_start, SECTION_TAG_START);
 	++progress;
 }
 
@@ -403,15 +399,14 @@ void article_reader::read_section() {
 //			sec_start = strstr(current, SECTION_TAG_START);
 //		}
 
-		if (previous != current) {
-			copy_to(previous, current);
-			previous = current;
-		}
-		copy_to(current, sec_start);
-		current = (char *)sec_start;
+//		if (previous != current) {
+//			copy_to(previous, current);
+//			previous = current;
+//		}
+//		copy_to(current, sec_start);
+//		current = (char *)sec_start;
 
-		if (sec_start != NULL) {
-			next_section = strstr(sec_start + strlen(SECTION_TAG_START), SECTION_TAG_START);
+		if (sec_start == current) {
 			// the first st is the section title of current section
 			read_element_text("st");
 			current_tag.erase(remove_if(current_tag.begin(), current_tag.end(), (int(*)(int))isspace), current_tag.end());
@@ -423,10 +418,21 @@ void article_reader::read_section() {
 				progress = REFERENCES;
 			else if (strncasecmp(current_tag.c_str(), EXTERNAL_LINKS_TEXT, strlen(EXTERNAL_LINKS_TEXT)) == 0)
 				progress = EXTERNAL_LINKS; //skip_external_links();
+			else
+				read_para();
+//			{
+//
+//				if (current_token.length != 0)
+//					return;
+//
+//			}
+		}
+		else {
+			if (para_start != NULL && para_start < next_section)
+				read_para();
 			else {
-				if (current_token.length != 0)
-					return;
-
+//				para_start = NULL;
+				after_reading_a_section();
 			}
 		}
 	}
@@ -438,7 +444,27 @@ void article_reader::read_section() {
 
 
 void article_reader::after_reading_a_section() {
+	sec_start = strstr(current, SECTION_TAG_START);
+	if (sec_start != NULL) {
+		copy_to_current();
+		current = sec_start;
 
+		para_start = sec_start + strlen(SECTION_TAG_START);
+		next_section = strstr(para_start /*+ strlen(SECTION_TAG_START)*/, SECTION_TAG_START);
+
+		if (next_section == NULL) {
+			next_section = strstr(para_start, SECTION_TAG_END);
+
+			if (next_section == NULL) {
+				string msg = string("The article is not well-formed, missing </sec>: ") + file_path;
+				throw msg.c_str();
+			}
+		}
+
+//		while (isspace(*para_start)) {
+//			++para_start;
+//		}
+	}
 }
 
 /*
@@ -538,6 +564,8 @@ void article_reader::read_para() {
 					current++;
 				}
 			}
+
+			para_start = current;
 //		}
 //	}
 
@@ -630,7 +658,7 @@ void article_reader::copy_to(const char *start, const char *end) {
 	writer->fill(start, end - start);
 }
 
-void article_reader::copy_to_current(const char* start, const char* end) {
+void article_reader::copy_to_current() {
 	if (previous != current) {
 		writer->fill(previous, current - previous);
 		previous = current;

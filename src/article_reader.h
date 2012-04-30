@@ -26,6 +26,7 @@ public:
 	static const char *PARA_TAG_START;
 	static const char *PARA_TAG_END;
 	static const char *SECTION_TAG_START;
+	static const char *SECTION_TAG_END;
 
 private:
 //	std::string content;
@@ -75,6 +76,7 @@ private:
 	void read_para();
 
 	void after_reading_abstract();
+//	void after_reading_a_para();
 	void after_reading_a_section();
 
 	void create_comment();
@@ -88,7 +90,7 @@ private:
 	void wrap_up_to_body();
 	void wrap_up_to_end();
 
-	void copy_to_current(const char *start, const char *end);
+	void copy_to_current();
 	void copy_to(const char *start, const char *end);
 	void copy_to_section_end();
 };
