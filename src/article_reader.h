@@ -23,6 +23,10 @@ class article_reader : public article {
 public:
 	enum {COMMENT = -1, DOCTYPE = 0, TITLE = 1, CATEGORIES = 2, ABSTRACT = 3, MAIN_TEXT = 4, NOTES = 5, REFERENCES = 6, EXTERNAL_LINKS = 7};
 
+	static const char *PARA_TAG_START;
+	static const char *PARA_TAG_END;
+	static const char *SECTION_TAG_START;
+
 private:
 //	std::string content;
 //	std::string& out;
@@ -70,6 +74,9 @@ private:
 	void read_section();
 	void read_para();
 
+	void after_reading_abstract();
+	void after_reading_a_section();
+
 	void create_comment();
 	void reconstruct_comment();
 
@@ -82,6 +89,7 @@ private:
 	void wrap_up_to_end();
 
 	void copy_to_current(const char *start, const char *end);
+	void copy_to(const char *start, const char *end);
 	void copy_to_section_end();
 };
 

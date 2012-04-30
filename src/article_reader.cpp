@@ -19,13 +19,17 @@
 
 using namespace std;
 
+const char *article_reader::PARA_TAG_START = "<p>";
+const char *article_reader::PARA_TAG_END = "</p>";
+const char *article_reader::SECTION_TAG_START = "<sec>";
+
 /*
  *
  *
  */
 char *article_reader::string_clean(token_string& token, long lower_case_only)
 {
-char *ch, *from, *to;
+char *ch; //, *from, *to;
 
 /*
 	remove XML tags and remove all non-alnum (but keep case)
@@ -96,7 +100,7 @@ void article_reader::process() {
 	init_token();
 
 	if (current != previous) {
-		copy_to_current(previous, current);
+		copy_to(previous, current);
 		previous = current;
 	}
 
@@ -120,27 +124,22 @@ void article_reader::process() {
 			break;
 		case ABSTRACT:
 			this->read_abstract();
-	//		++progress;
 			break;
 		case MAIN_TEXT:
 			this->read_main_text();
-	//		++progress;
 			break;
 		case NOTES:
 			this->skip_notes();
 //			this->read_notes();
 			read_section();
-	//		++progress;
 			break;
 		case REFERENCES:
 			this->skip_references();
 			read_section();
-//			++progress;
 			break;
 		case EXTERNAL_LINKS:
 			this->skip_external_links();
 			read_section();
-//			++progress;
 			break;
 		}
 	}
@@ -169,7 +168,7 @@ void article_reader::read_title() {
 	if (start != NULL) {
 		start += strlen(TITLE_TAG_START);
 		current_token.start = (char *)start;
-		copy_to_current(current, start);
+		copy_to(current, start);
 
 		end = strstr(start, TITLE_TAG_END);
 		if (end != NULL) {
@@ -211,8 +210,6 @@ void article_reader::read_categories() {
 }
 
 void article_reader::read_abstract() {
-	static const char *PARA_TAG_START = "<p>";
-	static const char *PARA_TAG_END = "</p>";
 //	while (current < first_section) {
 //
 //	}
@@ -220,7 +217,7 @@ void article_reader::read_abstract() {
 		++current;
 
 	if (previous != current) {
-		copy_to_current(previous, current);
+		copy_to(previous, current);
 		previous = current;
 	}
 
@@ -229,7 +226,7 @@ void article_reader::read_abstract() {
 	if (first_para > first_section) {
 		next_para = first_section;
 		if (current >= first_section) {
-			++progress;
+			after_reading_abstract();
 			return;
 		}
 	}
@@ -237,7 +234,7 @@ void article_reader::read_abstract() {
 		para_start = strstr(current, PARA_TAG_START);
 
 		if (para_start > first_section) {
-			++progress;
+			after_reading_abstract();
 			return;
 		}
 
@@ -256,8 +253,36 @@ void article_reader::read_abstract() {
 	read_para();
 }
 
+
+void article_reader::after_reading_abstract() {
+	sec_start = first_section;
+	para_start = sec_start + strlen(SECTION_TAG_START);
+	while (isspace(*para_start)) {
+		++para_start;
+	}
+
+
+	next_section = strstr(para_start, SECTION_TAG_START);
+	++progress;
+}
+
 void article_reader::read_main_text() {
-	sec_start == NULL;
+//	if (first_para > first_section) {
+//		next_para = first_section;
+//		if (current >= first_section) {
+//			++progress;
+//			return;
+//		}
+//	}
+//	else {
+//		para_start = strstr(current, PARA_TAG_START);
+//
+//		if (para_start > first_section) {
+//			++progress;
+//			return;
+//		}
+//	}
+//	sec_start == NULL;
 	read_section();
 //	while (next_section != NULL)
 //		read_section();
@@ -325,7 +350,7 @@ void article_reader::reconstruct_comment() {
 	}
 
 	if (start != NULL) {
-		copy_to_current(current, start);
+		copy_to(current, start);
 		create_comment();
 		current = start;
 
@@ -362,22 +387,27 @@ void article_reader::init_token() {
 }
 
 void article_reader::read_section() {
-	static const char *SECTION_TAG_START = "<sec>";
+
 	static const char *NOTES_TEXT = "Notes";
 	static const char *REFERENCES_TEXT = "References";
 	static const char *REFERENCES_TEXT2 = "Furtherreading";
 	static const char *EXTERNAL_LINKS_TEXT = "Externallinks";
 
-//	const char *sec_start;
-	if (sec_start == NULL || (next_section != NULL && current > next_section)) {
-		if (next_section != NULL) {
-			sec_start = next_section;
-		}
-		else {
-			sec_start = strstr(current, SECTION_TAG_START);
-		}
 
-		copy_to_current(current, sec_start);
+//	const char *sec_start;
+	if (sec_start != NULL /*|| (next_section != NULL && current > next_section)*/) {
+//		if (next_section != NULL) {
+//			sec_start = next_section;
+//		}
+//		else {
+//			sec_start = strstr(current, SECTION_TAG_START);
+//		}
+
+		if (previous != current) {
+			copy_to(previous, current);
+			previous = current;
+		}
+		copy_to(current, sec_start);
 		current = (char *)sec_start;
 
 		if (sec_start != NULL) {
@@ -401,10 +431,15 @@ void article_reader::read_section() {
 		}
 	}
 	else {
-		read_para();
+//		read_para();
+		++progress;
 	}
 }
 
+
+void article_reader::after_reading_a_section() {
+
+}
 
 /*
  * current version skip the table
@@ -419,7 +454,7 @@ void article_reader::read_para() {
 		++current;
 
 	if (previous != current) {
-		copy_to_current(previous, current);
+		copy_to(previous, current);
 		previous = current;
 	}
 
@@ -432,7 +467,7 @@ void article_reader::read_para() {
 //			next_para = strstr(para_start + strlen(PARA_TAG_START), PARA_TAG_START);
 //		}
 //
-////		copy_to_current(current, para_start);
+////		copy_to(current, para_start);
 ////		current = para_start;
 //	}
 //
@@ -476,7 +511,7 @@ void article_reader::read_para() {
 						if (*current != '\0') {
 							++current;
 						}
-						copy_to_current(previous, current);
+						copy_to(previous, current);
 						read_element_text(NULL);
 
 						previous = current;
@@ -552,7 +587,7 @@ void article_reader::read_element_text(const char* tag_name) {
 			++start;
 
 		current_token.start = start;
-		copy_to_current(current, start);
+		copy_to(current, start);
 		previous = current = start;
 
 		end = strstr(start, tag_end.c_str());
@@ -578,7 +613,7 @@ void article_reader::wrap_up_to_body() {
 		start += strlen(BODY_TAG_START);
 
 		current = start;
-		copy_to_current(previous, current);
+		copy_to(previous, current);
 		previous = current;
 	}
 	else {
@@ -591,8 +626,15 @@ void article_reader::wrap_up_to_end() {
 	writer->fill(current);
 }
 
-void article_reader::copy_to_current(const char *start, const char *end) {
+void article_reader::copy_to(const char *start, const char *end) {
 	writer->fill(start, end - start);
+}
+
+void article_reader::copy_to_current(const char* start, const char* end) {
+	if (previous != current) {
+		writer->fill(previous, current - previous);
+		previous = current;
+	}
 }
 
 void article_reader::copy_to_section_end() {
@@ -603,7 +645,7 @@ void article_reader::copy_to_section_end() {
 		section_end = strstr(start, SECTION_TAG_END);
 		if (section_end != NULL) {
 			section_end += strlen(SECTION_TAG_END);
-			copy_to_current(start, section_end);
+			copy_to(start, section_end);
 			current = (char *)section_end;
 		}
 	}

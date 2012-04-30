@@ -83,5 +83,8 @@ test_database_LDFLAGS = -static
 HEADER_FILES = $(SOURCE_DIR)/*.h
 SQL_FILES = $(SQL_DIR)/*.sql
 
-#EXTRA_DIST = \
-#	*.sh
+EXTRA_DIST = \
+	files/test.xml \
+	files/google_translate_research_api_example_result.xml \
+	sql/database.sql \
+	test_key.sh
