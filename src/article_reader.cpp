@@ -162,26 +162,27 @@ void article_reader::read_title() {
 	static const char *TITLE_TAG_START = "<title>";
 	static const char *TITLE_TAG_END = "</title>";
 
-	current_tag = "title";
+	//current_tag = "title";
+	read_element_text("title");
+//	start = strstr(current, TITLE_TAG_START);
+//	if (start != NULL) {
+//		start += strlen(TITLE_TAG_START);
+//		current = current_token.start = (char *)start;
+//		copy_to_current();
+//		copy_to(current, start);
 
-	start = strstr(current, TITLE_TAG_START);
-	if (start != NULL) {
-		start += strlen(TITLE_TAG_START);
-		current_token.start = (char *)start;
-		copy_to(current, start);
-
-		end = strstr(start, TITLE_TAG_END);
-		if (end != NULL) {
-			previous = current;
-			current_token.length = end - start;
-			current = end += strlen(TITLE_TAG_END);
-
-
-//			start = strchr(start, '"');
-//			++start;
-//			end =  strchr(start, '"');
-		}
-	}
+//		end = strstr(start, TITLE_TAG_END);
+//		if (end != NULL) {
+//			previous = current;
+//			current_token.length = end - start;
+//			current = end += strlen(TITLE_TAG_END);
+//
+//
+////			start = strchr(start, '"');
+////			++start;
+////			end =  strchr(start, '"');
+//		}
+//	}
 
 	if (start == NULL || end == NULL) {
 		string msg = string("The article is not well-formed in the article title: ") + file_path;
@@ -637,8 +638,10 @@ void article_reader::read_element_text(const char* tag_name) {
 		if (end != NULL) {
 			previous = current;
 			current_token.length = end - start;
-			if (tag_end != "<")
+			if (tag_end != "<") {
+				previous = end;
 				current = end += tag_end.length();
+			}
 			else
 				current = end;
 		}
