@@ -108,6 +108,15 @@ string corpus::id2doc(unsigned long id)
 	return iter != doc_map_.end() ? iter->second : "";
 }
 
+string corpus::docpath(std::string lang)
+{
+	string pages_path =  with_pages_path ? string("pages") + string(sys_file::SEPARATOR): string("");
+	if (lang.length() > 0)
+		return home_ + sys_file::SEPARATOR + lang + sys_file::SEPARATOR + pages_path;
+
+	return home_ + sys_file::SEPARATOR + pages_path;//
+}
+
 string corpus::id2docpath(unsigned long id, std::string lang)
 {
 //	if (load_)
@@ -119,11 +128,8 @@ string corpus::id2docpath(unsigned long id, std::string lang)
 //	cmd.append(stm.str());
 //
 //	return system_call::instance().execute(cmd.c_str());
-if (lang.length() > 0)
-	return home_ + sys_file::SEPARATOR + lang + sys_file::SEPARATOR + "pages" + sys_file::SEPARATOR + id2dir(id) + ext();
 
-return home_ + sys_file::SEPARATOR + with_pages_path ? "pages" : "" + sys_file::SEPARATOR + id2dir(id) + ext();
-
+	return docpath(lang) + id2dir(id) + ext();
 }
 
 string corpus::id2docpath(unsigned long id)

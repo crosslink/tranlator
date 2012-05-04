@@ -281,7 +281,21 @@ int sys_file::stat(struct stat *st, const char *name)
 
 int sys_file::create_directory(const char *name)
 {
-	return mkdir(name, 0777);
+	return mkdir(name, umask(0777));
+}
+
+void sys_file::mkdir_p(const char *name) {
+	const char *separator = name;
+	char path[1024 * 1024];
+	long len = strlen(name);
+	while ((separator = strstr(separator, SEPARATOR)) != NULL) {
+		memcpy((char *)path, (char *)name, len);
+		path[separator - name] = '\0';
+		separator += strlen(SEPARATOR);
+		if (!exist(path))
+			create_directory(path);
+	}
+//	::free(path);
 }
 
 int sys_file::write(const char *content, const char *filename)

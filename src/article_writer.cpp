@@ -11,6 +11,8 @@
 #include <string>
 #include <ctype.h>
 
+#include "string_utils.h"
+
 using namespace std;
 
 corpus article_writer::out;
@@ -27,10 +29,13 @@ void article_writer::create_output_file(const char* file) {
 	name = file2name(file);
 	if (name.length() > 0 && isdigit(name[0])) {
 
-		int id = file2id(name.c_str());
+		int id = atoi(name.c_str());
 	//	string id_str = id2dir(id);
+		string parent_path = out.docpath() + id2dir(id);
+		if (!sys_file::exist(parent_path.c_str()))
+			sys_file::mkdir_p(parent_path.c_str());
 
-		file_path = out.id2docpath(id);
+		file_path = parent_path + number_to_string(id) + "." + ext;
 	}
 	else {
 		file_path = out.home() + name + "." + ext;

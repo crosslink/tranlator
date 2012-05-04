@@ -50,6 +50,7 @@
 
 		static std::string id2dir(unsigned long id);
 
+		virtual std::string docpath(std::string lang = "");
 		virtual std::string id2doc(unsigned long id);
 		virtual std::string id2docpath(unsigned long id);
 		virtual std::string id2docpath(unsigned long id, std::string lang);

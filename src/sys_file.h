@@ -49,7 +49,7 @@ public:
 	static bool isdir(const char *name);
 	static int stat(struct stat *st, const char *name);
 	static int create_directory(const char *name);
-
+	static void mkdir_p(const char *name);
 	static int write(const char *content, const char *filename);
 
 	char **list(char *dir, char **files_list, bool recursive = false);

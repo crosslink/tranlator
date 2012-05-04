@@ -43,7 +43,7 @@ void article::write() {
 std::string article::id2dir(unsigned long id) {
 	long last3 = id >= 1000 ? (id - (id /1000) * 1000) : id;
 	std::ostringstream stm;
-	stm << std::setw(3) << std::setfill('0') << last3 << sys_file::SEPARATOR << id;
+	stm << std::setw(3) << std::setfill('0') << last3 << sys_file::SEPARATOR /*<< id*/;
 	return stm.str();
 }
 
