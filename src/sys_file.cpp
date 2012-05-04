@@ -291,6 +291,7 @@ int sys_file::write(const char *content, const char *filename)
 	p = fopen(filename, "w");
 	if (p == NULL) {
 		fprintf(stderr, "Error in opening a file..", filename);
+		exit(-1);
 	}
 	len = strlen(content);
 	fwrite(content, len, 1, p);

@@ -31,6 +31,8 @@
 		std::string								teara_home_;
 		std::string								lang_;
 
+		bool									with_pages_path;
+
 	public:
 		corpus();
 		corpus(const char *doclist);

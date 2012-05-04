@@ -1,6 +1,0 @@
-src/webpage_retriever_d.o: src/webpage_retriever.cpp \
- src/webpage_retriever.h src/pattern_singleton.h
-
-src/webpage_retriever.h:
-
-src/pattern_singleton.h:

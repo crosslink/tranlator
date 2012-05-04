@@ -56,9 +56,9 @@ std::string article::file2name(const char* file) {
 	//string::size_type pos = name ;
 //	string part(sname, base_.size());
 	string::size_type pos;
-	pos = sname.find(sys_file::SEPARATOR);
+	pos = sname.find_last_of(sys_file::SEPARATOR);
 	if (pos != string::npos)
-		sname.erase(0, pos);
+		sname.erase(0, pos + 1);
 	pos = sname.find('.');
 	ext = sname.substr(pos + 1);
 	if (pos != string::npos)

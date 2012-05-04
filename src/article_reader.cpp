@@ -369,10 +369,19 @@ void article_reader::init_token() {
 void article_reader::read_section() {
 
 	static const char *NOTES_TEXT = "Notes";
+	static const char *NOTES_TEXT_CHINESE_ZS_S = "\346\263\250\351\207\212";
+	static const char *NOTES_TEXT_CHINESE_ZS_T = "\350\250\273\351\207\213"; // zhu shi
+
 	static const char *REFERENCES_TEXT = "References";
 	static const char *REFERENCES_TEXT2 = "Furtherreading";
-	static const char *EXTERNAL_LINKS_TEXT = "Externallinks";
+	static const char *REFERENCES_TEXT_CHINESE_CKZL_T = "\345\217\203\350\200\203\350\263\207\346\226\231"; // chan kao zhi liao
+	static const char *REFERENCES_TEXT_CHINESE_CKZL_S = "\345\217\202\350\200\203\350\265\204\346\226\231";
+	static const char *REFERENCES_TEXT_CHINESE_CKWX_T = "\345\217\203\350\200\203\346\226\207\347\215\273"; // chan kao wen xian
+	static const char *REFERENCES_TEXT_CHINESE_CKWX_S = "\345\217\202\350\200\203\346\226\207\347\214\256";
 
+	static const char *EXTERNAL_LINKS_TEXT = "Externallinks";
+	static const char *EXTERNAL_LINKS_TEXT_CHINESE_T = "\345\244\226\351\203\250\351\200\243\347\265\220"; // traditional
+	static const char *EXTERNAL_LINKS_TEXT_CHINESE_S = "\345\244\226\351\203\250\351\223\276\346\216\245"; // simplified
 
 //	const char *sec_start;
 	copy_to_current();
@@ -382,13 +391,24 @@ void article_reader::read_section() {
 			read_element_text("st");
 			string section_title(current_token.start, current_token.length);
 			section_title.erase(remove_if(section_title.begin(), section_title.end(), (int(*)(int))isspace), section_title.end());
-			if (strncasecmp(section_title.c_str(), NOTES_TEXT, strlen(NOTES_TEXT)) == 0)
+			if (strncasecmp(section_title.c_str(), NOTES_TEXT, strlen(NOTES_TEXT)) == 0 ||
+					strncasecmp(section_title.c_str(), NOTES_TEXT_CHINESE_ZS_T, strlen(NOTES_TEXT_CHINESE_ZS_T)) == 0 ||
+						strncasecmp(section_title.c_str(), NOTES_TEXT_CHINESE_ZS_S, strlen(NOTES_TEXT_CHINESE_ZS_S)) == 0
+					)
 				progress = NOTES; //skip_notes();
 			else if ((strncasecmp(section_title.c_str(), REFERENCES_TEXT, strlen(REFERENCES_TEXT)) == 0))
 				progress = REFERENCES; //skip_references();
-			else if ((strncasecmp(section_title.c_str(), REFERENCES_TEXT2, strlen(REFERENCES_TEXT)) == 0))
+			else if ((strncasecmp(section_title.c_str(), REFERENCES_TEXT2, strlen(REFERENCES_TEXT)) == 0) ||
+					(strncasecmp(section_title.c_str(), REFERENCES_TEXT_CHINESE_CKZL_T, strlen(REFERENCES_TEXT_CHINESE_CKZL_T)) == 0) ||
+					(strncasecmp(section_title.c_str(), REFERENCES_TEXT_CHINESE_CKZL_S, strlen(REFERENCES_TEXT_CHINESE_CKZL_S)) == 0) ||
+					(strncasecmp(section_title.c_str(), REFERENCES_TEXT_CHINESE_CKWX_T, strlen(REFERENCES_TEXT_CHINESE_CKWX_T)) == 0) ||
+					(strncasecmp(section_title.c_str(), REFERENCES_TEXT_CHINESE_CKWX_S, strlen(REFERENCES_TEXT_CHINESE_CKWX_S)) == 0)
+					)
 				progress = REFERENCES;
-			else if (strncasecmp(section_title.c_str(), EXTERNAL_LINKS_TEXT, strlen(EXTERNAL_LINKS_TEXT)) == 0)
+			else if ((strncasecmp(section_title.c_str(), EXTERNAL_LINKS_TEXT, strlen(EXTERNAL_LINKS_TEXT)) == 0) ||
+					(strncasecmp(section_title.c_str(), EXTERNAL_LINKS_TEXT_CHINESE_T, strlen(EXTERNAL_LINKS_TEXT_CHINESE_T)) == 0) ||
+					(strncasecmp(section_title.c_str(), EXTERNAL_LINKS_TEXT_CHINESE_T, strlen(EXTERNAL_LINKS_TEXT_CHINESE_S)) == 0)
+					)
 				progress = EXTERNAL_LINKS; //skip_external_links();
 			else {
 				if (current_token.length == 0) {
@@ -418,8 +438,10 @@ void article_reader::read_section() {
 		}
 	}
 	else {
-//		read_para();
-		++progress;
+		if (progress >= NOTES)
+			progress = ARTICLE_END;
+		else
+			++progress;
 	}
 }
 
@@ -475,7 +497,7 @@ void article_reader::read_para() {
 			test_forward = current;
 			while (isspace(*(++test_forward)))
 				++test_forward;
-			if (*test_forward == '\/') {
+			if (*test_forward == '/') {
 				++test_forward;
 				while (isspace(*test_forward))
 					++test_forward;
@@ -483,7 +505,7 @@ void article_reader::read_para() {
 			}
 //			++test_forward;
 			string this_tag("");
-			while (*test_forward != '>' && !isspace(*test_forward))
+			while (*test_forward != '>' && !isspace(*test_forward) && *test_forward != '/')
 				this_tag.push_back(*test_forward++);
 
 			if (strcasecmp(this_tag.c_str(), "sec") == 0) {
@@ -494,6 +516,10 @@ void article_reader::read_para() {
 					current += strlen(SECTION_TAG_END);
 					after_reading_a_section();
 					break;
+				}
+				else {
+					current += strlen(SECTION_TAG_START);
+					copy_to_current();
 				}
 			}
 			else if (strcasecmp(this_tag.c_str(), "p") == 0) { // keep the p tags
@@ -576,18 +602,20 @@ void article_reader::after_reading_a_para() {
 
 	para_start = strstr(current, PARA_TAG_START);
 
-	if (current < para_start) {
-		next_para = para_start;
-		para_start = current;
-	}
-	else {
-		next_para = strstr(para_start + strlen(PARA_TAG_START), PARA_TAG_START);
-		if (next_para == NULL) {
-			next_para = strstr(para_start + strlen(PARA_TAG_END), PARA_TAG_END);
-
+	if (para_start != NULL) {
+		if (current < para_start) {
+			next_para = para_start;
+			para_start = current;
+		}
+		else {
+			next_para = strstr(para_start + strlen(PARA_TAG_START), PARA_TAG_START);
 			if (next_para == NULL) {
-				string msg = string("The article is not well-formed, <p> missing </p>: ") + file_path;
-				throw msg.c_str();
+				next_para = strstr(para_start + strlen(PARA_TAG_END), PARA_TAG_END);
+
+				if (next_para == NULL) {
+					string msg = string("The article is not well-formed, <p> missing </p>: ") + file_path;
+					throw msg.c_str();
+				}
 			}
 		}
 	}

@@ -40,6 +40,7 @@ void corpus::init()
 {
 	doclist_ = "doclist.aspt";
 	load_ = false;
+	with_pages_path = false;
 }
 
 void corpus::load()
@@ -121,7 +122,7 @@ string corpus::id2docpath(unsigned long id, std::string lang)
 if (lang.length() > 0)
 	return home_ + sys_file::SEPARATOR + lang + sys_file::SEPARATOR + "pages" + sys_file::SEPARATOR + id2dir(id) + ext();
 
-return home_ + sys_file::SEPARATOR + "pages" + sys_file::SEPARATOR + id2dir(id) + ext();
+return home_ + sys_file::SEPARATOR + with_pages_path ? "pages" : "" + sys_file::SEPARATOR + id2dir(id) + ext();
 
 }
 

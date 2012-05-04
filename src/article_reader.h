@@ -21,7 +21,7 @@ struct token_string {
 
 class article_reader : public article {
 public:
-	enum {COMMENT = -1, DOCTYPE = 0, TITLE = 1, CATEGORIES = 2, ABSTRACT = 3, MAIN_TEXT = 4, NOTES = 5, REFERENCES = 6, EXTERNAL_LINKS = 7};
+	enum {COMMENT = -1, DOCTYPE = 0, TITLE = 1, CATEGORIES = 2, ABSTRACT = 3, MAIN_TEXT = 4, NOTES = 5, REFERENCES = 6, EXTERNAL_LINKS = 7, ARTICLE_END};
 
 	static const char *PARA_TAG_START;
 	static const char *PARA_TAG_END;

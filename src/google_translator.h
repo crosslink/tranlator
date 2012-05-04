@@ -30,6 +30,9 @@
 		static const int KEY_VALID = 1;
 		static const int KEY_LOADED = 0;
 
+		static const int RESULT_CODE_SUCCESS = 0;
+		static const int RESULT_CODE_ERROR = -1;
+//		static const int RESULT_CODE_ERROR = -1; other errors types
 
 	protected:
 		static std::string api_key;
@@ -47,11 +50,13 @@
 
 		static bool to_test_key;
 
+		std::string trans;
+
 	public:
 		google_translator();
 		virtual ~google_translator();
 
-		std::string translate(const char *text, long length = -1);
+		const char *translate(const char *text, long length = -1);
 		static bool has_valid_key();
 
 		virtual std::string get_translation(const char *content);

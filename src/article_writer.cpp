@@ -27,7 +27,7 @@ void article_writer::create_output_file(const char* file) {
 	name = file2name(file);
 	if (name.length() > 0 && isdigit(name[0])) {
 
-		int id = file2id(file);
+		int id = file2id(name.c_str());
 	//	string id_str = id2dir(id);
 
 		file_path = out.id2docpath(id);
