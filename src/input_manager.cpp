@@ -17,7 +17,11 @@
 
 using namespace std;
 
-#define ENABLE_TRANSLATOR 0
+#ifndef ENABLE_TRANSLATOR
+	#define ENABLE_TRANSLATOR 0
+#else
+	#define ENABLE_TRANSLATOR 1
+#endif
 
 std::string input_manager::out_path;
 
@@ -98,10 +102,10 @@ void input_manager::translate() {
 #if ENABLE_TRANSLATOR == 1
 //				string trans = string();
 				string trans = translator.translate(source_string);
-#ifdef DEBUG
-				cerr << source->tag << " (Translation): " << trans << endl;
-#endif
 				writer.fill(trans);
+	#ifdef DEBUG
+					cerr << source->tag << " (Translation): " << trans << endl;
+	#endif
 #endif
 				delete [] source_string;
 				source = reader.get_next_token();

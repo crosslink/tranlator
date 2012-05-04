@@ -281,7 +281,7 @@ int sys_file::stat(struct stat *st, const char *name)
 
 int sys_file::create_directory(const char *name)
 {
-	return mkdir(name, umask(0777));
+	return mkdir(name, umask(0002));
 }
 
 void sys_file::mkdir_p(const char *name) {

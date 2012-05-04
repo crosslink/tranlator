@@ -58,12 +58,12 @@ void article_writer::fill(const char* more, size_t length) {
 }
 
 void article_writer::initialize_output_corpus() {
-	out.home(input_manager::get_out_path());
+	out.home(input_manager::get_out_path() + sys_file::SEPARATOR);
 
 }
 
 void article_writer::initialize_output_corpus(const char* out_path) {
-	out.home(out_path);
+	out.home(out_path + string(sys_file::SEPARATOR));
 }
 
 

@@ -52,6 +52,8 @@
 
 		std::string trans;
 
+		int result;
+
 	public:
 		google_translator();
 		virtual ~google_translator();

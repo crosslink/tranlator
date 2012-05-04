@@ -226,7 +226,7 @@ void article_reader::read_abstract() {
 		}
 	}
 	else {
-		if (para_start > first_section) {
+		if (para_start >= first_section) {
 			after_reading_abstract();
 			return;
 		}
