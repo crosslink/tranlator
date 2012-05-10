@@ -69,7 +69,13 @@
 		curl_global_cleanup();
 	}
 
-	void webpage_retriever::free_chunk()
+int webpage_retriever::get_response_code() {
+	int response_code = 0;
+	curl_easy_getinfo (curl_handle, CURLINFO_RESPONSE_CODE, &response_code);
+	return response_code;
+}
+
+void webpage_retriever::free_chunk()
 	{
 		  if(chunk.memory) {
 			free(chunk.memory);

@@ -62,13 +62,16 @@ int main(int argc, char **argv) {
 
 		}
 
-	if (has_error_param || param >= argc)
+	if (has_error_param /*|| param >= argc*/)
 		usage(argv[0]);
-
-	for (int i = param; i < argc; ++i) {
-		manager.load(argv[i]);
+	if (param >= argc) {
 		manager.translate();
 	}
+	else
+		for (int i = param; i < argc; ++i) {
+			manager.load(argv[i]);
+			manager.translate();
+		}
 
 	return 0;
 }

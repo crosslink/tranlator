@@ -38,6 +38,8 @@
 		char *retrieve(const char *url);
 		void add_header(const char *header);
 
+		int get_response_code();
+
 	private:
 		void free_chunk();
 	};

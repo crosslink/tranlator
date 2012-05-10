@@ -134,6 +134,7 @@ bool google_translator::has_valid_key() {
 
 const char *google_translator::translate(const char *text, long length)
 {
+	int response_code;
 	string url(query_template);
 //		append_lp(url, language_pair);
 //		append_text(url, text);
@@ -143,11 +144,13 @@ const char *google_translator::translate(const char *text, long length)
 
 //	add_lang_options(url, language_pair);
 	const char *content = webpage_retriever::instance().retrieve(url.c_str());
-
-
-	trans = get_translation(content);
-
-	return trans.c_str();
+	response_code = webpage_retriever::instance().get_response_code();
+	if (response_code == 200) {
+		trans = get_translation(content);
+		return trans.c_str();
+	}
+	cerr << content << endl;
+	return NULL;
 }
 
 std::string google_translator::get_translation(const char *content)

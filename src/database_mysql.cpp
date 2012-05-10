@@ -106,6 +106,8 @@ void database_mysql::fill(std::vector<long>& container) {
 				  container.push_back(id);
 		  }
 	  }
+
+	  processing(container);
 }
 
 

@@ -16,6 +16,9 @@
 #include "sys_files.h"
 
 class input_manager {
+public:
+	enum {READ_FROM_DATABASE, READ_FROM_DISK};
+
 private:
 	std::string input;
 	static std::string out_path;
@@ -25,7 +28,7 @@ private:
 	std::string language_pair;
 
 	sys_files *disk;
-
+	int read_type;
 
 public:
 	input_manager();
@@ -34,6 +37,9 @@ public:
 
 	void load(const char *file);
 	void translate();
+	void load_from_disk();
+	void load_from_database();
+	void translate_file(const char *file);
 
 	void set_language_pair(const char *);
 	static void set_out_path(std::string out_path);
