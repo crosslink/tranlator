@@ -9,6 +9,7 @@
 #include "corpus.h"
 #include "article_reader.h"
 #include "article_writer.h"
+#include "database_mysql.h"
 
 #include <string.h>
 
@@ -99,7 +100,17 @@ void input_manager::load_from_disk() {
 
 void input_manager::load_from_database() {
 	std::vector<long> container;
+	database_mysql::instance().fill(container);
 
+	for (int i = 0; i < container.size(); ++i) {
+		long id = container[i];
+		string file = in_corpus.id2docpath(id);
+		translate_file(file.c_str());
+	}
+}
+
+void input_manager::set_read_type(int type) {
+	read_type = type;
 }
 
 void input_manager::init() {
@@ -118,12 +129,19 @@ void input_manager::set_language_pair(const char *language_pair) {
 }
 
 void input_manager::load(const char* filename) {
-	disk = new sys_files();
-	disk->pattern("*.[xX][mM][lL]");
-	disk->list(filename);
-	if (disk->isdir(filename)) {
-		corpus::instance().base(filename);
+	if (read_type == READ_FROM_DISK) {
+		disk = new sys_files();
+		disk->pattern("*.[xX][mM][lL]");
+		disk->list(filename);
+		if (disk->isdir(filename)) {
+			in_corpus.base(filename);
+		}
 	}
+	else if (read_type == READ_FROM_DATABASE) {
+		database_mysql::instance().connect();
+		in_corpus.home(filename);
+	}
+
 //	const char *name = NULL;
 //
 //	for (name = disk->first(); name != NULL ; name = disk->next())

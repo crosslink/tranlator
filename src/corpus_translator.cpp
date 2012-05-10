@@ -38,6 +38,8 @@ int main(int argc, char **argv) {
 		}
 		if (strncmp(argv[param], "-o", 2) == 0)
 			manager.set_out_path(string(strchr(argv[param], ':') + 1));
+		if (strncmp(argv[param], "-database", 9) == 0)
+			manager.set_read_type(input_manager::READ_FROM_DATABASE);
 //			lowercase_only = TRUE;
 //		else if (strcmp(argv[param], "-noyears") == 0)
 //			print_mode |= MODE_NO_4_DIGIT_NUMBERS;
@@ -62,16 +64,13 @@ int main(int argc, char **argv) {
 
 		}
 
-	if (has_error_param /*|| param >= argc*/)
+	if (has_error_param || param >= argc)
 		usage(argv[0]);
-	if (param >= argc) {
+
+	for (int i = param; i < argc; ++i) {
+		manager.load(argv[i]);
 		manager.translate();
 	}
-	else
-		for (int i = param; i < argc; ++i) {
-			manager.load(argv[i]);
-			manager.translate();
-		}
 
 	return 0;
 }

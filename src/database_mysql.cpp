@@ -17,6 +17,9 @@ using namespace std;
 database_mysql::database_mysql() {
 	connection = NULL;
 	number_of_doc = DEFAULT_NUMBER_OF_DOC_PER_REQUEST;
+
+	init();
+//	connect();
 }
 
 database_mysql::~database_mysql() {
@@ -87,7 +90,7 @@ void database_mysql::fill(std::vector<long>& container) {
 	MYSQL_ROW row;
 
 	static const string template_query("select id from topics where status = 0 and result = 0");
-	string limits = "limit " + number_to_string(number_of_doc);
+	string limits = " limit " + number_to_string(number_of_doc);
 	string query = template_query + limits;
 
 	mysql_query(connection, query.c_str());
@@ -96,6 +99,7 @@ void database_mysql::fill(std::vector<long>& container) {
 //	int num_fields = mysql_num_fields(result);
 	container.clear();
 
+	if (result) {
 	  while ((row = mysql_fetch_row(result)))
 	  {
 
@@ -108,6 +112,7 @@ void database_mysql::fill(std::vector<long>& container) {
 	  }
 
 	  processing(container);
+	}
 }
 
 
@@ -148,6 +153,10 @@ void database_mysql::processing(std::vector<long>& container) {
 void database_mysql::fail(std::vector<long>& container) {
 	update_status(container, 0, 0);
 	update_status(container, 1, 0);
+}
+
+void database_mysql::update_translation(long id, const char* translation,
+		const char* target_lang) {
 }
 
 void database_mysql::init() {
