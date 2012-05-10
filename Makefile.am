@@ -55,7 +55,7 @@ libgoogle_translate_la_HEADERS = $(libgoogle_translate_headers)
 libgoogle_translate_la_LIBADD = -lpthread -lcurl 
 libgoogle_translate_la_LIBFLAGS = 
 		
-test_PROGRAMES = test_parse_translation	test_database	
+test_PROGRAMES = test_parse_translation	test_database test_spaces_removal
 		
 noinst_PROGRAMS = corpus_translator google_translate $(test_PROGRAMES)
 
@@ -79,6 +79,8 @@ test_database_SOURCES = $(TEST_DIR)/test_database.cpp
 test_database_LDADD = -lgoogle_translate
 test_database_DEPENDENCIES = libgoogle_translate.la
 test_database_LDFLAGS = -static
+
+test_spaces_removal_SOURCES = $(TEST_DIR)/test_spaces_removal.cpp
 
 HEADER_FILES = $(SOURCE_DIR)/*.h
 SQL_FILES = $(SQL_DIR)/*.sql

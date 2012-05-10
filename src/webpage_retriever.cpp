@@ -71,7 +71,7 @@
 
 int webpage_retriever::get_response_code() {
 	int response_code = 0;
-	curl_easy_getinfo (curl_handle, CURLINFO_RESPONSE_CODE, &response_code);
+	curl_easy_getinfo(curl_handle, CURLINFO_RESPONSE_CODE, &response_code);
 	return response_code;
 }
 
@@ -84,7 +84,7 @@ void webpage_retriever::free_chunk()
 		  chunk.size = 0;
 	}
 
-	char *webpage_retriever::retrieve(const char *url)
+	char *webpage_retriever::retrieve(const char *url, int *response_code)
 	{
 		free_chunk();
 
@@ -93,7 +93,7 @@ void webpage_retriever::free_chunk()
 
 	  /* get it! */
 	  curl_easy_perform(curl_handle);
-
+	  curl_easy_getinfo(curl_handle, CURLINFO_RESPONSE_CODE, response_code);
 	  /*
 	   * Now, our chunk.memory points to a memory block that is chunk.size
 	   * bytes big and contains the remote file.

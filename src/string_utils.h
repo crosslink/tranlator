@@ -223,4 +223,21 @@ inline std::string collection_to_list(T& collection) {
 	return list.str();
 }
 
+inline void remove_redundant_spaces(const char *from, std::string& to) {
+	const char *ch = from;
+	to.clear();
+	while (*ch != '\0') {
+		while (*ch != '\0' && *ch == ' ')
+			++ch;
+
+		while (*ch != '\0' && *ch != ' ')
+			to.push_back(*ch++);
+
+		// it is space
+		if (*ch != '\0')
+			to.push_back(*ch++);
+//		if (isspace(*ch))
+	}
+}
+
 #endif /* STRING_UTILS_H_ */

@@ -35,7 +35,7 @@
 		webpage_retriever();
 		virtual ~webpage_retriever();
 
-		char *retrieve(const char *url);
+		char *retrieve(const char *url, int *response_code);
 		void add_header(const char *header);
 
 		int get_response_code();

@@ -12,6 +12,12 @@
 #include "sys_files.h"
 #include "corpus.h"
 
+#ifndef ENABLE_TRANSLATOR
+	#define ENABLE_TRANSLATOR 0
+#else
+	#define ENABLE_TRANSLATOR 1
+#endif
+
 class input_manager {
 public:
 	enum {READ_FROM_DATABASE, READ_FROM_DISK};
@@ -21,7 +27,8 @@ private:
 	static std::string out_path;
 	corpus in_corpus;
 
-//	static google_research_translator& translator;
+	google_research_translator& translator;
+	int limit;
 
 	std::string language_pair;
 
@@ -41,6 +48,7 @@ public:
 
 	void set_language_pair(const char *);
 	void set_read_type(int type);
+	void set_limit(int limit);
 
 	static void set_out_path(std::string out_path);
 	static std::string& get_out_path();
