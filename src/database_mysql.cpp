@@ -6,6 +6,7 @@
  */
 
 #include "database_mysql.h"
+#include "string_utils.h"
 
 #include <stddef.h>
 
@@ -15,6 +16,7 @@ using namespace std;
 
 database_mysql::database_mysql() {
 	connection = NULL;
+	number_of_doc = DEFAULT_NUMBER_OF_DOC_PER_REQUEST;
 }
 
 database_mysql::~database_mysql() {
@@ -78,6 +80,72 @@ void database_mysql::execute_query(std::string query) {
 	      }
 	      printf("\n");
 	  }
+}
+
+void database_mysql::fill(std::vector<long>& container) {
+	MYSQL_RES *result;
+	MYSQL_ROW row;
+
+	static const string template_query("select id from topics where status = 0 and result = 0");
+	string limits = "limit " + number_to_string(number_of_doc);
+	string query = template_query + limits;
+
+	mysql_query(connection, query.c_str());
+	result = mysql_store_result(connection);
+
+//	int num_fields = mysql_num_fields(result);
+	container.clear();
+
+	  while ((row = mysql_fetch_row(result)))
+	  {
+
+//	          printf("%s ", row[i] ? row[i] : "NULL");
+		  if (row[0]) {
+			  long id = atol(row[0]);
+			  if (id > -1)
+				  container.push_back(id);
+		  }
+	  }
+}
+
+
+
+void database_mysql::finish(std::vector<long>& container) {
+	update_status(container, 0, 1);
+}
+
+void database_mysql::update_status(std::vector<long>& container, int type, int value) {
+	if (container.size() <= 0)
+		return;
+
+	MYSQL_RES *result;
+
+//	static const char *template_query_update("update topics set %s=%d where id in (%s)");
+	string doc_list = collection_to_list(container);
+	string column;
+	switch (type) {
+	case 0:
+		column = "result";
+		break;
+	case 1:
+		column = "status";
+		break;
+	}
+	string value_string = number_to_string(value);
+	std::stringstream query_buffer;
+	query_buffer << "update topics set " << column << "=" << value_string << " where id in (" << doc_list << ")";
+	string query = query_buffer.str();
+	mysql_query(connection, query.c_str());
+	result = mysql_store_result(connection);
+}
+
+void database_mysql::processing(std::vector<long>& container) {
+	update_status(container, 1, 1);
+}
+
+void database_mysql::fail(std::vector<long>& container) {
+	update_status(container, 0, 0);
+	update_status(container, 1, 0);
 }
 
 void database_mysql::init() {

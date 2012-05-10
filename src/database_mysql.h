@@ -11,8 +11,12 @@
 #include <mysql/mysql.h>
 
 #include <string>
+#include <vector>
 
 class database_mysql {
+public:
+	const static int DEFAULT_NUMBER_OF_DOC_PER_REQUEST = 50;
+
 private:
     std::string server;
     std::string user;
@@ -21,6 +25,8 @@ private:
 
     MYSQL *connection;
 
+    int number_of_doc;
+
 public:
 	database_mysql();
 	virtual ~database_mysql();
@@ -28,6 +34,13 @@ public:
 	int connect();
 
 	void execute_query(std::string);
+
+	void fill(std::vector<long>& container);
+	void finish(std::vector<long>& container);
+	void fail(std::vector<long>& container);
+	void processing(std::vector<long>& container);
+
+	void update_status(std::vector<long>& container, int type, int value);
 
 private:
 	void init();
