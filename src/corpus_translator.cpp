@@ -22,12 +22,14 @@ int main(int argc, char **argv) {
 	if (argc <= 1) {
 		usage(argv[0]);
 	}
-	int param;
+
 	input_manager manager;
-	const char *p;
+
 	bool has_error_param;
 	long limit = 500;
 
+	int param;
+	const char *p;
 	for (param = 1; param < argc && *argv[param] == '-'; param++)
 		{
 		if (strncmp(argv[param], "-lp", 3) == 0) {

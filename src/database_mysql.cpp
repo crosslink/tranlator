@@ -159,6 +159,42 @@ void database_mysql::update_translation(long id, const char* translation,
 		const char* target_lang) {
 }
 
+std::string database_mysql::get_google_translate_key() {
+	MYSQL_RES *result;
+	MYSQL_ROW row;
+
+	static const string template_query_get_key("select key from key");
+
+	mysql_query(connection, template_query_get_key.c_str());
+	result = mysql_store_result(connection);
+
+
+	if (result) {
+	  while ((row = mysql_fetch_row(result)))
+	  {
+
+//	          printf("%s ", row[i] ? row[i] : "NULL");
+		  if (row[0]) {
+			  string key = row[0];
+			  return key;
+		  }
+	  }
+	 return "";
+}
+
+void database_mysql::update_google_translate_key(const char* key) {
+	MYSQL_RES *result;
+
+	static const string template_query_update_key("update key set key=QUOTE(");
+	string query = template_query_update_key + key + ")";
+	mysql_query(connection, query.c_str());
+	result = mysql_store_result(connection);
+
+	if (result) {
+		cerr << "Updated key: " << result << endl;
+	}
+}
+
 void database_mysql::init() {
 	server = "localhost";
 	database = "google_translate_info";

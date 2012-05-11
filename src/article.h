@@ -46,6 +46,9 @@ public:
     long get_doc_id();
     void set_doc_id(long  id);
 
+private:
+    void init();
+
 };
 
 #endif /* ARTICLE_H_ */

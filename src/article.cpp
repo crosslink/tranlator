@@ -18,16 +18,21 @@ using namespace std;
 
 
 article::article() {
-	content = NULL;
+	init();
 }
 
 article::article(const char *file) : file_path(file) {
-	content = NULL;
+	init();
 }
 
 article::~article() {
 	if (content != NULL)
 		delete [] content;
+}
+
+void article::init() {
+	content = NULL;
+	doc_id = -1;
 }
 
 void article::read() {
@@ -108,6 +113,8 @@ std::string article::file2name(const char* file) {
 int article::file2id(const char* name) {
 	return atoi(name);
 }
+
+
 
 
 

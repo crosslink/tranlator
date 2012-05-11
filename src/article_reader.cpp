@@ -184,7 +184,7 @@ void article_reader::read_title() {
 //		}
 //	}
 
-	if (start == NULL || end == NULL) {
+	if (start != NULL && end == NULL) {
 		string msg = string("The article is not well-formed in the article title: ") + file_path;
 		throw msg.c_str();
 	}
@@ -217,24 +217,26 @@ void article_reader::read_abstract() {
 	copy_to_current();
 
 //	para_start = current;
-
-	if (first_para > first_section) {
-		next_para = first_section;
-		if (current >= first_section) {
-			after_reading_abstract();
-			return;
+	if (first_section) {
+		if (first_para > first_section) {
+			next_para = first_section;
+			if (current >= first_section) {
+				after_reading_abstract();
+				return;
+			}
 		}
-	}
-	else {
-		if (para_start >= first_section) {
-			after_reading_abstract();
-			return;
-		}
+		else {
+			if (para_start >= first_section) {
+				after_reading_abstract();
+				return;
+			}
 
+		}
 	}
 
 	read_para();
-
+	if (current_token.length == 0)
+		++progress;
 }
 
 
@@ -730,8 +732,10 @@ void article_reader::copy_to_section_end() {
 //			current = (char *)section_end;
 		}
 		else {
-			string msg = string("The article is not well-formed, <sec> missing </sec>: ") + file_path;
-			throw msg.c_str();
+			if (sec_start != NULL) {
+				string msg = string("The article is not well-formed, <sec> missing </sec>: ") + file_path;
+				throw msg.c_str();
+			}
 		}
 //	}
 }

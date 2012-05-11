@@ -16,6 +16,7 @@
 
 #include <string>
 #include <iostream>
+#include <sstream>
 
 using namespace std;
 
@@ -88,25 +89,30 @@ void input_manager::translate_file(const char *file, long id) {
 		source_string[source->length] = '\0';
 //				string source_str(source->start, source->length);
 #ifdef DEBUG
-		cerr << source->tag << ": " << source_string << endl;
+		cerr << source->tag << ": " << endl;
 #endif
 
 #if ENABLE_TRANSLATOR == 1
+		std::stringstream fulltran;
 		std::string shorted;
 		const char *end = remove_redundant_spaces(source_string, shorted, limit);
 		do {
 
 	//				string trans = string();
+			cerr << shorted;
 			const char *trans = translator.translate(shorted.c_str());
 			if (trans == NULL) {
 
 	//					exit(-1);
 				break;
 			}
+			fulltran << trans;
 			writer.fill(trans);
-		} while (*end = '\0');
+		} while (*end == '\0');
+
 	#ifdef DEBUG
-			cerr << source->tag << " (Translation): " << trans << endl;
+		cerr << endl;
+		cerr << source->tag << " (Translation): " << fulltran.str() << endl;
 	#endif
 #endif
 
