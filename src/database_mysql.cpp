@@ -15,8 +15,7 @@
 using namespace std;
 
 database_mysql::database_mysql() {
-	connection = NULL;
-	number_of_doc = DEFAULT_NUMBER_OF_DOC_PER_REQUEST;
+
 
 	init();
 //	connect();
@@ -38,6 +37,7 @@ int database_mysql::connect() {
 	}
 	else {
 		cerr << "Database (" << server << ": " << database << ") connected" << endl;
+		connected = true;
 	}
 
 //		Query query = connection->query();
@@ -164,6 +164,10 @@ void database_mysql::init() {
 	database = "google_translate_info";
 	user = "gt";
 	password = "gtproject";
+
+	connection = NULL;
+	connected = false;
+	number_of_doc = DEFAULT_NUMBER_OF_DOC_PER_REQUEST;
 }
 
 

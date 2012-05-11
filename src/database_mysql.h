@@ -28,6 +28,7 @@ private:
     MYSQL *connection;
 
     int number_of_doc;
+    bool connected;
 
 public:
 	database_mysql();
@@ -44,6 +45,8 @@ public:
 
 	void update_status(std::vector<long>& container, int type, int value);
 	void update_translation(long id, const char *translation, const char *target_lang);
+
+	bool is_connected() { return connected; }
 
 private:
 	void init();

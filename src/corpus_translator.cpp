@@ -13,7 +13,7 @@
 using namespace std;
 
 void usage(char *program) {
-	cerr << "Usage: " << program << " [-l:source_lang:target_lang] [-o:/a/path/for/output] /a/path/to/translation/corpus" << std::endl;
+	cerr << "Usage: " << program << " [-lp:source_lang:target_lang] [-limit:500] [-o:/a/path/for/output] /a/path/to/translation/corpus" << std::endl;
 	exit(-1);
 }
 
@@ -26,19 +26,27 @@ int main(int argc, char **argv) {
 	input_manager manager;
 	const char *p;
 	bool has_error_param;
+	long limit = 500;
 
 	for (param = 1; param < argc && *argv[param] == '-'; param++)
 		{
-		if (strncmp(argv[param], "-l", 2) == 0) {
+		if (strncmp(argv[param], "-lp", 3) == 0) {
 			p = strchr(argv[param], ':');
 			if (p)
 				manager.set_language_pair(p + 1);
 			else
 				has_error_param = true;
 		}
-		if (strncmp(argv[param], "-o", 2) == 0)
+		else if (strncmp(argv[param], "-limit", 6) == 0) {
+			limit = atol(strchr(argv[param], ':') + 1);
+			if (limit < 0) {
+				cerr << "Unknown limit option: " << argv[param] << endl;
+				has_error_param = true;
+			}
+		}
+		else if (strncmp(argv[param], "-o", 2) == 0)
 			manager.set_out_path(string(strchr(argv[param], ':') + 1));
-		if (strncmp(argv[param], "-database", 9) == 0)
+		else if (strncmp(argv[param], "-database", 9) == 0)
 			manager.set_read_type(input_manager::READ_FROM_DATABASE);
 //			lowercase_only = TRUE;
 //		else if (strcmp(argv[param], "-noyears") == 0)
@@ -66,6 +74,8 @@ int main(int argc, char **argv) {
 
 	if (has_error_param || param >= argc)
 		usage(argv[0]);
+
+	manager.set_limit(limit);
 
 	for (int i = param; i < argc; ++i) {
 		manager.load(argv[i]);

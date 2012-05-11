@@ -25,11 +25,15 @@ void article_writer::write() {
 	article::write(out_content.c_str());
 }
 
+void article_writer::write(int write_type) {
+}
+
 void article_writer::create_output_file(const char* file) {
 	name = file2name(file);
 	if (name.length() > 0 && isdigit(name[0])) {
 
 		int id = atoi(name.c_str());
+		set_doc_id(id);
 	//	string id_str = id2dir(id);
 		string parent_path = out.docpath() + id2dir(id);
 		if (!sys_file::exist(parent_path.c_str()))
@@ -39,6 +43,9 @@ void article_writer::create_output_file(const char* file) {
 	}
 	else {
 		file_path = out.home() + name + "." + ext;
+		// TODO
+		// convert the file name into unique doc id
+		// id = ???
 	}
 }
 

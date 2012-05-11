@@ -31,9 +31,12 @@ private:
 	int limit;
 
 	std::string language_pair;
+	std::string source_lang;
+	std::string target_lang;
 
 	sys_files *disk;
 	int read_type;
+	int write_type;
 
 public:
 	input_manager();
@@ -44,11 +47,11 @@ public:
 	void translate();
 	void load_from_disk();
 	void load_from_database();
-	void translate_file(const char *file);
+	void translate_file(const char *file, long id = -1);
 
 	void set_language_pair(const char *);
 	void set_read_type(int type);
-	void set_limit(int limit);
+	void set_limit(int limit) { this->limit = limit; }
 
 	static void set_out_path(std::string out_path);
 	static std::string& get_out_path();

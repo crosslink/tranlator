@@ -26,6 +26,7 @@ public:
 	void fill(const char *more, size_t length = -1);
 
 	virtual void write();
+	virtual void write(int write_type);
 
 	static void initialize_output_corpus();
 	static void initialize_output_corpus(const char *out_path);

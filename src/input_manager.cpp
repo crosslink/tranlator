@@ -22,14 +22,14 @@ using namespace std;
 
 std::string input_manager::out_path;
 
-inline char *remove_redundant_spaces(const char *from, std::string& to, long limit) {
+inline const char *remove_redundant_spaces(const char *from, std::string& to, long limit) {
 	const char *ch = from;
 	to.clear();
 	while (*ch != '\0') {
 		while (*ch != '\0' && *ch == ' ')
 			++ch;
 
-		if (ch - from > limit)
+		if (to.length() > limit)
 			return ch;
 
 		while (*ch != '\0' && *ch != ' ')
@@ -65,10 +65,17 @@ std::string& input_manager::get_out_path() {
 	return out_path;
 }
 
-void input_manager::translate_file(const char *file) {
+void input_manager::translate_file(const char *file, long id) {
 	article_reader reader(file);
 	article_writer writer(file);
+	writer.set_source_lang(source_lang);
+	writer.set_target_lang(target_lang);
+
 //		reader.copy_to_next_token(writer);
+	long doc_id = id;
+
+	if (doc_id == -1)
+		doc_id = writer.get_doc_id();
 
 	reader.read();
 
@@ -81,27 +88,32 @@ void input_manager::translate_file(const char *file) {
 		source_string[source->length] = '\0';
 //				string source_str(source->start, source->length);
 #ifdef DEBUG
-		std::string shorted;
-		remove_redundant_spaces(source_string, shorted);
-		cerr << source->tag << ": " << shorted << endl;
+		cerr << source->tag << ": " << source_string << endl;
 #endif
-#if ENABLE_TRANSLATOR == 1
-//				string trans = string();
-		const char *trans = translator.translate(shorted.c_str());
-		if (trans == NULL) {
 
-//					exit(-1);
-			break;
-		}
-		writer.fill(trans);
-#ifdef DEBUG
+#if ENABLE_TRANSLATOR == 1
+		std::string shorted;
+		const char *end = remove_redundant_spaces(source_string, shorted, limit);
+		do {
+
+	//				string trans = string();
+			const char *trans = translator.translate(shorted.c_str());
+			if (trans == NULL) {
+
+	//					exit(-1);
+				break;
+			}
+			writer.fill(trans);
+		} while (*end = '\0');
+	#ifdef DEBUG
 			cerr << source->tag << " (Translation): " << trans << endl;
+	#endif
 #endif
-#endif
+
 		delete [] source_string;
 		source = reader.get_next_token();
 	}
-	writer.write();
+	writer.write(write_type);
 }
 
 void input_manager::load_from_disk() {
@@ -124,7 +136,7 @@ void input_manager::load_from_database() {
 	for (int i = 0; i < container.size(); ++i) {
 		long id = container[i];
 		string file = in_corpus.id2docpath(id);
-		translate_file(file.c_str());
+		translate_file(file.c_str(), id);
 	}
 }
 
@@ -145,6 +157,9 @@ void input_manager::cleanup() {
 
 void input_manager::set_language_pair(const char *language_pair) {
 	this->language_pair = language_pair;
+	const char *pos = strchr(language_pair, ':');
+	source_lang = string(language_pair, pos);
+	target_lang = string(pos + 1);
 }
 
 void input_manager::load(const char* filename) {
