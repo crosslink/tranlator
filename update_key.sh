@@ -4,16 +4,18 @@
 
 key=
 token=
+echo "parameters: $1"
 
 accept_key () {
 	echo "$token" > Auth.txt
 	key=`echo "$token" | tail -n 1 | cut -f 2 -d "="`
+	key=`echo $key`
 	echo $key > auth_key.txt
 	
-	if [ $1 -n ]
+	if ! [ -z  $1 ]
 	then
-		echo "storing key into database..."
-		$1 $key
+		echo "using $1 storing key into database..."
+		"$1" $key
 	fi
 }
 
@@ -22,8 +24,8 @@ echo ""
 #[ "$mypassword" == "$PASS" ] && echo "Password accepted" || echo "Access denied"
 
 key_word="Auth="
-#token=`curl -d "Email=lingxiang.tang@gmail.com&Passwd=${mypassword}&service=rs2" https://www.google.com/accounts/ClientLogin`
-token=`cat Auth.txt`
+token=`curl -d "Email=lingxiang.tang@gmail.com&Passwd=${mypassword}&service=rs2" https://www.google.com/accounts/ClientLogin`
+#token=`cat Auth.txt`
 
 echo $token | grep -i $key_word > /dev/null
 
@@ -35,7 +37,7 @@ then
 	echo ""
 	echo -n "Do you want to accept this key ? (y/n)"
 	read ans
-	[ $ans == "y" ] && echo "Accept this key ......" && accept_key || sleep 2 && exit 0
+	[ $ans == "y" ] && echo "Accept this key ......" && accept_key $1 || sleep 2 && exit 0
 
 	
 else

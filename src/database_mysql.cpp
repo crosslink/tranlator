@@ -185,14 +185,19 @@ std::string database_mysql::get_google_translate_key() {
 void database_mysql::update_google_translate_key(const char* key) {
 	MYSQL_RES *result;
 
-	static const string template_query_update_key("update key set key=QUOTE(");
-	string query = template_query_update_key + key + ")";
-	mysql_query(connection, query.c_str());
-	result = mysql_store_result(connection);
+	static const string template_query_update_key("UPDATE `google_translate_key` SET `key_value`='");
+	string query = template_query_update_key + key + "'";
 
-	if (result) {
-		cerr << "Updated key: " << result << endl;
-	}
+#ifdef DEBUG
+	cerr << "updating google transtion key with sql:" << endl << query << endl;
+#endif
+
+	if (mysql_query(connection, query.c_str()) != 0)
+		error_message();
+}
+
+void database_mysql::error_message() {
+	printf("Error %u: %s\n", mysql_errno(connection), mysql_error(connection));
 }
 
 void database_mysql::init() {

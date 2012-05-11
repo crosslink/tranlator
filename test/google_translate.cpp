@@ -49,6 +49,7 @@ int main(int argc, char **argv) {
 			token = argv[1];
 
 		cerr << "Token:" << endl << token << endl;
+		database_mysql::instance().connect();
 		database_mysql::instance().update_google_translate_key(token.c_str());
 	}
 	return 0;

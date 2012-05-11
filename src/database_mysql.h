@@ -50,6 +50,7 @@ public:
 	void update_google_translate_key(const char *key);
 
 	bool is_connected() { return connected; }
+	void error_message();
 
 private:
 	void init();
