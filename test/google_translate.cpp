@@ -8,6 +8,10 @@
 #include "../src/google_research_translator.h"
 #include "../src/database_mysql.h"
 #include "../src/sys_file.h"
+
+#include <stdlib.h>
+#include <string.h>
+
 #include <iostream>
 
 using namespace std;

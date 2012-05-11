@@ -3,14 +3,16 @@
 #PASS="abc123"
 
 key=
+token=
 
 accept_key () {
-	echo $token > Auth.txt
-	key=`echo $token | grep -i $key_word | cut -f 2 -d "="`
+	echo "$token" > Auth.txt
+	key=`echo "$token" | tail -n 1 | cut -f 2 -d "="`
 	echo $key > auth_key.txt
 	
-	if ! [ -z $1 ]
+	if [ $1 -n ]
 	then
+		echo "storing key into database..."
 		$1 $key
 	fi
 }
@@ -28,11 +30,12 @@ echo $token | grep -i $key_word > /dev/null
 if [ "$?" -eq "0" ]
 then
 	echo "Result:"
-	echo $token
-	
+	echo ""
+	echo "$token"
+	echo ""
 	echo -n "Do you want to accept this key ? (y/n)"
 	read ans
-	[ $ans == "y" ] && echo "Accept this key and $1 storing it into database ......" && accept_key || sleep 2 && exit 0
+	[ $ans == "y" ] && echo "Accept this key ......" && accept_key || sleep 2 && exit 0
 
 	
 else

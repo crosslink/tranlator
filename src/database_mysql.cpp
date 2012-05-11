@@ -170,15 +170,15 @@ std::string database_mysql::get_google_translate_key() {
 
 
 	if (result) {
-	  while ((row = mysql_fetch_row(result)))
+	  row = mysql_fetch_row(result);
 	  {
-
 //	          printf("%s ", row[i] ? row[i] : "NULL");
 		  if (row[0]) {
 			  string key = row[0];
 			  return key;
 		  }
 	  }
+	}
 	 return "";
 }
 
