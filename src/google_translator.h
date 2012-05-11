@@ -63,7 +63,11 @@
 
 		google_translator& get_instance();
 
-		void set_lang_pair(const char *langpair);
+		static void set_lang_pair(const char *langpair);
+		static void set_to_test_key(bool value) { to_test_key = value; }
+		static void set_api_key(const char *key) { api_key = key; }
+
+		bool test_key();
 
 	protected:
 
@@ -78,7 +82,7 @@
 		void init();
 		void init_once();
 		virtual void set_key();
-		bool test_key();
+
 	};
 
 //}

@@ -60,26 +60,11 @@ void google_translator::init_once() {
 		if (key_text != NULL) {
 			api_key = key_text;
 			this->set_key();
-			if ((!to_test_key) || test_key())
-				key_status = KEY_VALID;
-			else
-				key_status = KEY_INVALID;
+			if (to_test_key)
+				test_key();
 		}
 		else
 			key_status = KEY_INVALID;
-	}
-
-	switch (key_status) {
-	default:
-	case KEY_UNKNOWN:
-		std::cerr << "Unknown key loaded: " << api_key << std::endl;
-		exit(-1);
-	case KEY_INVALID:
-		std::cerr << "Invalid Google Translate API key: " << api_key << std::endl;
-		exit(-1);
-	case KEY_VALID:
-		std::cerr << "Google Translate API key: " << api_key << endl << " has been successfully verified. " << std::endl;
-		break;
 	}
 }
 
@@ -125,7 +110,27 @@ bool google_translator::test_key() {
 
 	source_lang = old_source_lang;
 	target_lang = old_target_lang;
-	return result == TEST_STRING_ZH;
+
+	bool has_valid_key = (result == TEST_STRING_ZH);
+	if (has_valid_key)
+		key_status = KEY_VALID;
+	else
+		key_status = KEY_INVALID;
+
+	switch (key_status) {
+	default:
+	case KEY_UNKNOWN:
+		std::cerr << "Unknown key loaded: " << api_key << std::endl;
+		exit(-1);
+	case KEY_INVALID:
+		std::cerr << "Invalid Google Translate API key: " << api_key << std::endl;
+		exit(-1);
+	case KEY_VALID:
+		std::cerr << "Google Translate API key: " << api_key << endl << " has been successfully verified. " << std::endl;
+		break;
+	}
+
+	return has_valid_key;
 }
 
 bool google_translator::has_valid_key() {
