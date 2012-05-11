@@ -165,7 +165,7 @@ std::string database_mysql::get_google_translate_key() {
 	MYSQL_RES *result;
 	MYSQL_ROW row;
 
-	static const string template_query_get_key("select key from key");
+	static const string template_query_get_key("select key_value from google_translate_key");
 
 	mysql_query(connection, template_query_get_key.c_str());
 	result = mysql_store_result(connection);

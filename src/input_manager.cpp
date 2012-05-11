@@ -95,20 +95,22 @@ void input_manager::translate_file(const char *file, long id) {
 #if ENABLE_TRANSLATOR == 1
 		std::stringstream fulltran;
 		std::string shorted;
-		const char *end = remove_redundant_spaces(source_string, shorted, limit);
+		const char *end = source_string;
 		do {
-
+			end = remove_redundant_spaces(end, shorted, limit);
 	//				string trans = string();
 			cerr << shorted;
-			const char *trans = translator.translate(shorted.c_str());
-			if (trans == NULL) {
+			if (shorted.length() > 0) {
+				const char *trans = translator.translate(shorted.c_str());
+				if (trans == NULL) {
 
-	//					exit(-1);
-				break;
+		//					exit(-1);
+					break;
+				}
+				fulltran << trans;
+				writer.fill(trans);
 			}
-			fulltran << trans;
-			writer.fill(trans);
-		} while (*end == '\0');
+		} while (end != NULL && *end != '\0');
 
 	#ifdef DEBUG
 		cerr << endl;
