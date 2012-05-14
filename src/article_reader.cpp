@@ -507,8 +507,18 @@ void article_reader::read_para() {
 			}
 //			++test_forward;
 			string this_tag("");
+
 			while (*test_forward != '>' && !isspace(*test_forward) && *test_forward != '/')
 				this_tag.push_back(*test_forward++);
+
+			/*
+			 * FIXME can't do this
+			 */
+//			if (end_tag && current_token.length == 0) {
+//				copy_to_current();
+//				current = test_forward;
+//				continue;
+//			}
 
 			if (strcasecmp(this_tag.c_str(), "sec") == 0) {
 				if (end_tag) {
