@@ -63,13 +63,18 @@ void article::write(const char* this_content) {
 }
 
 void article::write(const char* this_content, const char *path, int write_type) {
-	if (write_type & WRITE_TO_DATABASE && database_mysql::instance().is_connected()) {
-//		try {
-			database_mysql::instance().update_translation(doc_id, this_content, target_lang.c_str(), source_lang.c_str());
-//		}
-//		catch (translation_write_exception& e) {
-//
-//		}
+	if (database_mysql::instance().is_connected()) {
+		database_mysql::instance().finish(doc_id);
+
+		if (write_type & WRITE_TO_DATABASE) {
+	//		try {
+				database_mysql::instance().update_translation(doc_id, this_content, target_lang.c_str(), source_lang.c_str());
+
+	//		}
+	//		catch (translation_write_exception& e) {
+	//
+	//		}
+		}
 	}
 
 	if (write_type & WRITE_TO_DISK) {
@@ -82,6 +87,7 @@ void article::write(const char* this_content, const char *path, int write_type) 
 			throw ex;
 		}
 	}
+
 }
 
 void article::write(int write_type) {

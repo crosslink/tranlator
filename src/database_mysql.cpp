@@ -123,6 +123,7 @@ void database_mysql::fill(std::vector<long>& container) {
 
 void database_mysql::finish(std::vector<long>& container) {
 	update_status(container, 0, 1);
+	update_status(container, 1, 0);
 }
 
 

@@ -117,6 +117,8 @@ void input_manager::translate_file(const char *file, long id) {
 		cerr << endl;
 		cerr << source->tag << " (Translation): " << fulltran.str() << endl;
 	#endif
+#else
+		cerr << source_string << endl;
 #endif
 
 		delete [] source_string;
@@ -124,12 +126,14 @@ void input_manager::translate_file(const char *file, long id) {
 	}
 	try {
 		writer.write(write_type);
-		if (read_type == READ_FROM_DATABASE)
-			database_mysql::instance().finish(doc_id);
+//		if (read_type == READ_FROM_DATABASE)
+//			database_mysql::instance().finish(doc_id);
 	}
 	catch (translation_write_exception& e) {
 		cerr << "Error: " << e.what() << endl;
-		if ((write_type & article::WRITE_TO_DISK) == article::WRITE_TO_DISK)
+		if ((write_type & article::WRITE_TO_DISK) == article::WRITE_TO_DISK &&
+				(write_type & article::WRITE_TO_DATABASE) != article::WRITE_TO_DATABASE &&
+				read_type == READ_FROM_DATABASE)
 			database_mysql::instance().fail(doc_id);
 	}
 }

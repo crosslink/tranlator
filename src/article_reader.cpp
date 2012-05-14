@@ -562,7 +562,7 @@ void article_reader::read_para() {
 
 				if (!end_tag) {
 					copy_to(previous, current);
-					read_element_text(NULL);
+					read_element_text("caption");
 
 					previous = current;
 					start = strstr(current, IMAGE_TAG_END);
