@@ -51,6 +51,7 @@ public:
 
 	void set_language_pair(const char *);
 	void set_read_type(int type);
+	void set_write_type(int type);
 	void set_limit(int limit) { this->limit = limit; }
 
 	static void set_out_path(std::string out_path);

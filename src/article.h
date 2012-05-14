@@ -33,6 +33,7 @@ public:
     virtual void write();
     virtual void write(int write_type);
     virtual void write(const char* content);
+    virtual void write(const char* content, int write_type);
     virtual void write(const char* content, const char* path, int write_type);
     static std::string id2dir(unsigned long  id);
     static int file2id(const char* file);

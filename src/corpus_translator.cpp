@@ -9,6 +9,8 @@
 
 #include "input_manager.h"
 #include "string.h"
+#include "article.h"
+#include "database_mysql.h"
 
 using namespace std;
 
@@ -30,6 +32,8 @@ int main(int argc, char **argv) {
 
 	int param;
 	const char *p;
+	bool required_database = false;
+
 	for (param = 1; param < argc && *argv[param] == '-'; param++)
 		{
 		if (strncmp(argv[param], "-lp", 3) == 0) {
@@ -48,8 +52,14 @@ int main(int argc, char **argv) {
 		}
 		else if (strncmp(argv[param], "-o", 2) == 0)
 			manager.set_out_path(string(strchr(argv[param], ':') + 1));
-		else if (strncmp(argv[param], "-database", 9) == 0)
+		else if (strncmp(argv[param], "-database", 9) == 0) {
+			required_database = true;
 			manager.set_read_type(input_manager::READ_FROM_DATABASE);
+		}
+		else if (strncmp(argv[param], "-write2db", 9) == 0) {
+			required_database = true;
+			manager.set_write_type(article::WRITE_TO_DATABASE);
+		}
 //			lowercase_only = TRUE;
 //		else if (strcmp(argv[param], "-noyears") == 0)
 //			print_mode |= MODE_NO_4_DIGIT_NUMBERS;
@@ -76,6 +86,9 @@ int main(int argc, char **argv) {
 
 	if (has_error_param || param >= argc)
 		usage(argv[0]);
+
+	if (required_database)
+		database_mysql::instance().connect();
 
 	manager.set_limit(limit);
 

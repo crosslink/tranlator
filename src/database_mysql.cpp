@@ -158,7 +158,17 @@ void database_mysql::fail(std::vector<long>& container) {
 }
 
 void database_mysql::update_translation(long id, const char* translation,
-		const char* target_lang) {
+		const char* target_lang, const char* source_lang) {
+	std::stringstream query_buffer;
+	string escaped_string = escape_string(translation);
+	//query_buffer << "update translations set translation='" << escaped_string << "'" << " where id =" << id << " and source_lang = '" << source_lang << "' and target_lang = '" << target_lang << "'";
+	query_buffer << "insert into translations (translation, id, target_lang) values ('" << escaped_string << "', " << id << ", '" << target_lang << "') on duplicate key update translation='" << escaped_string <<  "'";
+	string query = query_buffer.str();
+#ifdef DEBUG
+	cerr << "QUERY:" << endl << query << endl;
+#endif
+	if (mysql_query(connection, query.c_str()) != 0)
+		error_message();
 }
 
 std::string database_mysql::get_google_translate_key() {
@@ -200,6 +210,15 @@ void database_mysql::update_google_translate_key(const char* key) {
 
 void database_mysql::error_message() {
 	printf("Error %u: %s\n", mysql_errno(connection), mysql_error(connection));
+	exit(-2);
+}
+
+std::string database_mysql::escape_string(const char* in) {
+    char *to = new char[strlen(in)*2+1];
+    mysql_real_escape_string(connection, to, in, strlen(in));
+    string result(to);
+    delete [] to;
+    return result;
 }
 
 void database_mysql::init() {

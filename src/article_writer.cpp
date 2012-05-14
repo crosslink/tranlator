@@ -26,6 +26,7 @@ void article_writer::write() {
 }
 
 void article_writer::write(int write_type) {
+	article::write(out_content.c_str(), write_type);
 }
 
 void article_writer::create_output_file(const char* file) {

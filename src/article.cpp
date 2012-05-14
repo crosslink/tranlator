@@ -30,6 +30,10 @@ article::~article() {
 		delete [] content;
 }
 
+void article::write(const char* this_content, int write_type) {
+	write(this_content, file_path.c_str(), write_type);
+}
+
 void article::init() {
 	content = NULL;
 	doc_id = -1;
@@ -59,7 +63,7 @@ void article::write(const char* this_content) {
 
 void article::write(const char* this_content, const char *path, int write_type) {
 	if (write_type & WRITE_TO_DATABASE && database_mysql::instance().is_connected())
-		database_mysql::instance().update_translation(doc_id, this_content, target_lang.c_str());
+		database_mysql::instance().update_translation(doc_id, this_content, target_lang.c_str(), source_lang.c_str());
 
 	if (write_type & WRITE_TO_DISK)
 		sys_file::write(this_content, file_path.c_str());

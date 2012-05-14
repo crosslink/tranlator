@@ -152,7 +152,12 @@ void input_manager::set_read_type(int type) {
 	read_type = type;
 }
 
+void input_manager::set_write_type(int type) {
+	write_type |= type;
+}
+
 void input_manager::init() {
+	write_type = article::WRITE_TO_DISK;
 	read_type = READ_FROM_DISK;
 	disk = NULL;
 	set_out_path(".");

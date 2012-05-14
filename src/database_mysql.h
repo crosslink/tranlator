@@ -46,11 +46,13 @@ public:
 	std::string get_google_translate_key();
 
 	void update_status(std::vector<long>& container, int type, int value);
-	void update_translation(long id, const char *translation, const char *target_lang);
+	void update_translation(long id, const char *translation, const char *target_lang, const char* source_lang);
 	void update_google_translate_key(const char *key);
 
 	bool is_connected() { return connected; }
 	void error_message();
+
+	std::string escape_string(const char *in);
 
 private:
 	void init();
