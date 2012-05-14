@@ -216,10 +216,12 @@ while (ch != file.end())
 template <typename T>
 inline std::string collection_to_list(T& collection) {
 	std::stringstream list;
-//	if (collection.size() > 1)
+	if (collection.size() > 1)
 		std::copy(collection.begin(), collection.end(), std::ostream_iterator<typename T::value_type>(list, ","));
-//	else if (collection.size() == 1)
-//		list << (T::value_type)collection.begin();
+	else if (collection.size() == 1) {
+		typename T::value_type the_first = *(collection.begin());
+		list << the_first;
+	}
 	return list.str();
 }
 

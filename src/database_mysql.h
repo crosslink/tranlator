@@ -18,6 +18,7 @@
 class database_mysql : public pattern_singleton<database_mysql> {
 public:
 	const static int DEFAULT_NUMBER_OF_DOC_PER_REQUEST = 50;
+	const static char *DEFAULT_CORPUS_TABLE;
 
 private:
     std::string server;
@@ -29,6 +30,8 @@ private:
 
     int number_of_doc;
     bool connected;
+
+    std::string corpus_table;
 
 public:
 	database_mysql();
@@ -43,6 +46,9 @@ public:
 	void fail(std::vector<long>& container);
 	void processing(std::vector<long>& container);
 
+	void finish(long id);
+	void fail(long id);
+
 	std::string get_google_translate_key();
 
 	void update_status(std::vector<long>& container, int type, int value);
@@ -53,6 +59,8 @@ public:
 	void error_message();
 
 	std::string escape_string(const char *in);
+
+	void set_corpus_table(std::string table_name) { corpus_table = table_name; }
 
 private:
 	void init();

@@ -15,6 +15,7 @@ inst_PROGRAMS =
 instdir = /usr/bin
 
 libgoogle_translate_headers = \
+	$(SOURCE_DIR)/translation_write_exception.h \
 	$(SOURCE_DIR)/urlcode.h \
 	$(SOURCE_DIR)/ant_link_parts.h \
 	$(SOURCE_DIR)/string_utils.h \
@@ -33,6 +34,7 @@ libgoogle_translate_headers = \
 	$(SOURCE_DIR)/webpage_retriever.h
 	
 libgoogle_translate_sources = \
+	$(SOURCE_DIR)/translation_write_exception.cpp \
 	$(SOURCE_DIR)/urlcode.cpp \
 	$(SOURCE_DIR)/article.cpp \
 	$(SOURCE_DIR)/article_reader.cpp \

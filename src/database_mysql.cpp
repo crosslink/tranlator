@@ -14,6 +14,8 @@
 
 using namespace std;
 
+const char *database_mysql::DEFAULT_CORPUS_TABLE = "wiki_corpus";
+
 database_mysql::database_mysql() {
 
 
@@ -91,7 +93,7 @@ void database_mysql::fill(std::vector<long>& container) {
 	MYSQL_RES *result;
 	MYSQL_ROW row;
 
-	static const string template_query("select id from topics where status = 0 and result = 0");
+	static const string template_query("select id from " + corpus_table + " where status = 0 and result = 0");
 	string limits = " limit " + number_to_string(number_of_doc);
 	string query = template_query + limits;
 
@@ -123,6 +125,20 @@ void database_mysql::finish(std::vector<long>& container) {
 	update_status(container, 0, 1);
 }
 
+
+void database_mysql::finish(long id) {
+	std::vector<long> tmp_vector;
+	tmp_vector.push_back(id);
+	finish(tmp_vector);
+}
+
+void database_mysql::fail(long id) {
+	std::vector<long> tmp_vector;
+	tmp_vector.push_back(id);
+	fail(tmp_vector);
+}
+
+
 void database_mysql::update_status(std::vector<long>& container, int type, int value) {
 	if (container.size() <= 0)
 		return;
@@ -142,19 +158,19 @@ void database_mysql::update_status(std::vector<long>& container, int type, int v
 	}
 	string value_string = number_to_string(value);
 	std::stringstream query_buffer;
-	query_buffer << "update topics set " << column << "=" << value_string << " where id in (" << doc_list << ")";
+	query_buffer << "update " << corpus_table << " set " << column << "=" << value_string << " where id in (" << doc_list << ")";
 	string query = query_buffer.str();
-	mysql_query(connection, query.c_str());
-	result = mysql_store_result(connection);
+	if (mysql_query(connection, query.c_str()) != 0)
+		error_message();
 }
 
 void database_mysql::processing(std::vector<long>& container) {
-	update_status(container, 1, 1);
+	update_status(container, 1, 1); //
 }
 
 void database_mysql::fail(std::vector<long>& container) {
-	update_status(container, 0, 0);
-	update_status(container, 1, 0);
+	update_status(container, 0, 0); // result, 0:unfished
+	update_status(container, 1, -1); // status, processed but with error (-1);
 }
 
 void database_mysql::update_translation(long id, const char* translation,
@@ -226,6 +242,8 @@ void database_mysql::init() {
 	database = "google_translate_info";
 	user = "gt";
 	password = "gtproject";
+
+	corpus_table = DEFAULT_CORPUS_TABLE;
 
 	connection = NULL;
 	connected = false;

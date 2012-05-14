@@ -8,6 +8,7 @@
 #include "article.h"
 #include "sys_file.h"
 #include "database_mysql.h"
+#include "translation_write_exception.h"
 
 #include <utility>
 #include <sstream>
@@ -62,11 +63,25 @@ void article::write(const char* this_content) {
 }
 
 void article::write(const char* this_content, const char *path, int write_type) {
-	if (write_type & WRITE_TO_DATABASE && database_mysql::instance().is_connected())
-		database_mysql::instance().update_translation(doc_id, this_content, target_lang.c_str(), source_lang.c_str());
+	if (write_type & WRITE_TO_DATABASE && database_mysql::instance().is_connected()) {
+//		try {
+			database_mysql::instance().update_translation(doc_id, this_content, target_lang.c_str(), source_lang.c_str());
+//		}
+//		catch (translation_write_exception& e) {
+//
+//		}
+	}
 
-	if (write_type & WRITE_TO_DISK)
-		sys_file::write(this_content, file_path.c_str());
+	if (write_type & WRITE_TO_DISK) {
+		try {
+			sys_file::write(this_content, file_path.c_str());
+		}
+		catch (exception& e) {
+			cerr << e.what() << endl;
+			translation_write_exception ex(translation_write_exception::WRITE_FILE_ERROR);
+			throw ex;
+		}
+	}
 }
 
 void article::write(int write_type) {

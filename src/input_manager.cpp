@@ -10,6 +10,7 @@
 #include "article_reader.h"
 #include "article_writer.h"
 #include "database_mysql.h"
+#include "translation_write_exception.h"
 //#include "string_utils.h"
 
 #include <string.h>
@@ -121,7 +122,16 @@ void input_manager::translate_file(const char *file, long id) {
 		delete [] source_string;
 		source = reader.get_next_token();
 	}
-	writer.write(write_type);
+	try {
+		writer.write(write_type);
+		if (read_type == READ_FROM_DATABASE)
+			database_mysql::instance().finish(doc_id);
+	}
+	catch (translation_write_exception& e) {
+		cerr << "Error: " << e.what() << endl;
+		if ((write_type & article::WRITE_TO_DISK) == article::WRITE_TO_DISK)
+			database_mysql::instance().fail(doc_id);
+	}
 }
 
 void input_manager::load_from_disk() {
@@ -185,7 +195,7 @@ void input_manager::load(const char* filename) {
 		}
 	}
 	else if (read_type == READ_FROM_DATABASE) {
-		database_mysql::instance().connect();
+//		database_mysql::instance().connect();
 		in_corpus.home(filename);
 	}
 

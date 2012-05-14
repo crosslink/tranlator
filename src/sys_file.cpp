@@ -15,6 +15,10 @@
 #include <stdexcept>
 #include <string>
 
+#define WITH_EXCEPTION 1
+
+using namespace std;
+
 #if defined(WINDOWS) || defined(_WIN32) || defined(_WIN64)
 	const char *sys_file::SEPARATOR = "\\";
 	const char *sys_file::DEFAULT_PATTERN = "*.*";
@@ -281,7 +285,7 @@ int sys_file::stat(struct stat *st, const char *name)
 
 int sys_file::create_directory(const char *name)
 {
-	return mkdir(name, umask(0002));
+	return mkdir(name, 0777/*umask(0002)*/);
 }
 
 void sys_file::mkdir_p(const char *name) {
@@ -304,8 +308,12 @@ int sys_file::write(const char *content, const char *filename)
 	size_t len = 0;
 	p = fopen(filename, "w");
 	if (p == NULL) {
-		fprintf(stderr, "Error in opening a file..", filename);
+#if WITH_EXCEPTION == 1
+		throw (string("Error in opening file: ") + string(filename)).c_str();
+#else
+		fprintf(stderr, "Error in opening file (%s)..", filename);
 		exit(-1);
+#endif
 	}
 	len = strlen(content);
 	fwrite(content, len, 1, p);
