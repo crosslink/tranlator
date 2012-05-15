@@ -11,6 +11,7 @@
 #include "article_writer.h"
 #include "database_mysql.h"
 #include "translation_write_exception.h"
+#include "language.h"
 //#include "string_utils.h"
 
 #include <string.h>
@@ -36,8 +37,15 @@ const char *input_manager::remove_redundant_spaces(const char *from, std::string
 				return ch;
 		}
 
-		while (*ch != '\0' && *ch != ' ')
+		while (*ch != '\0' && *ch != ' ') {
+			if (language::is_cjk_punctuation(ch)) {
+				long size = language::utf8_bytes(ch);
+				to.append(ch, size);
+				ch += size;
+				break;
+			}
 			to.push_back(*ch++);
+		}
 
 		// it is space
 		if (*ch != '\0')

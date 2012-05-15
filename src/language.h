@@ -47,7 +47,7 @@ public:
 	static int ischinese(const char *here) { return ischinese((const unsigned char *)here); }
 
 	static int is_cjk_punctuation(const unsigned char *here);
-	static int is_cjk_punctuation(const char *here) { return ischinese((const unsigned char *)here); }
+	static int is_cjk_punctuation(const char *here) { return is_cjk_punctuation((const unsigned char *)here); }
 
 	static unsigned long utf8_to_wide(const unsigned char *here);
 	static long utf8_bytes(const unsigned char *here);
@@ -124,6 +124,31 @@ else
 		|| (chinese >=0x20000 && chinese <= 0x2a6df)		// CJK Unified Ideographs Extension B
 		|| (chinese >=0xf900 && chinese <= 0xfaff)		// CJK Compatibility Ideographs
 		|| (chinese >=0x2f800 && chinese <= 0x2fa1f));	// CJK Compatibility Ideographs Supplement
+	}
+}
+
+/*
+	ANT_PARSER::IS_CJK_PUNCTUATION()
+	-----------------------
+	Is the given character from the CJK Punctuation CodePoint?
+*/
+inline int language::is_cjk_punctuation(const unsigned char *here)
+{
+unsigned long punctuation;
+
+if (!isutf8(here))
+	return FALSE;
+else
+	{
+	punctuation = utf8_to_wide(here);
+
+	return ((punctuation >= 0xfe10 && punctuation <= 0xfe1f)    // CJK Vertical Forms (FE10–FE1F)
+		|| (punctuation >= 0xfe30 && punctuation <= 0xfe4f)		// CJK Compatibility Forms (FE30–FE4F)
+		|| (punctuation == 0x3002)                              // full stop
+		|| (punctuation >= 0x003a && punctuation <= 0x003b)   // ;
+		|| (punctuation == 0x0021)                              // !
+		|| (punctuation == 0x003f)                              // ?
+		);
 	}
 }
 

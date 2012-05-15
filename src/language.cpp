@@ -615,3 +615,7 @@ int language::count_terms(const char *src)
 	}
 	return count;
 }
+//
+//int language::is_cjk_punctuation(const unsigned char* here) {
+//}
+
