@@ -48,6 +48,7 @@ const char *input_manager::remove_redundant_spaces(const char *from, std::string
 }
 
 input_manager::input_manager() : translator(google_research_translator::get_instance()) {
+	translator.initialize(google_translator::LOAD_KEY);
 	init();
 }
 

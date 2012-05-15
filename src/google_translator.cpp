@@ -10,6 +10,7 @@
 #include "string_utils.h"
 #include "sys_file.h"
 #include "urlcode.h"
+#include "database_mysql.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -44,7 +45,7 @@ const char *google_translator::GOOGLE_TRANSLATE_API_KEY_FILE = "key.txt";
 int google_translator::key_status =  google_translator::KEY_UNKNOWN;
 bool google_translator::to_test_key = false;
 
-google_translator::google_translator()
+google_translator::google_translator() : initialized(false)
 {
 
 }
@@ -54,18 +55,47 @@ google_translator::~google_translator()
 
 }
 
-void google_translator::init_once() {
-	if (key_status == KEY_UNKNOWN) {
-		const char *key_text = sys_file::read_entire_file(api_key_file.c_str());
-		if (key_text != NULL) {
-			api_key = key_text;
-			this->set_key();
-			if (to_test_key)
-				test_key();
+void google_translator::init_once(int do_what) {
+	if (do_what == LOAD_KEY) {
+		if (key_status == KEY_UNKNOWN) {
+			const char *key_text = NULL;
+			if (sys_file::exist(api_key_file.c_str()))
+				sys_file::read_entire_file(api_key_file.c_str());
+			else
+				key_text = database_mysql::instance().get_google_translate_key().c_str();
+
+			if (key_text != NULL) {
+				api_key = key_text;
+				this->set_key();
+				if (to_test_key)
+					test_key();
+			}
+			else {
+				cerr << "No key found!" << endl;
+				exit(-3);
+	//			key_status = KEY_INVALID;
+			}
 		}
-		else
-			key_status = KEY_INVALID;
 	}
+}
+
+google_translator& google_translator::get_instance(int do_what) {
+	google_translator& instance = get_instance();
+	if (!instance.is_initialized())
+		instance.initialize(do_what);
+	return instance;
+}
+
+bool google_translator::is_initialized() const {
+	return initialized;
+}
+
+void google_translator::set_initialized(bool initialized) {
+	this->initialized = initialized;
+}
+
+void google_translator::initialize(int do_what) {
+	init(do_what);
 }
 
 void google_translator::set_key()
@@ -80,17 +110,16 @@ void google_translator::set_key()
 google_translator & google_translator::get_instance()
 {
 	static google_translator instance;
-	instance.init();
 	return instance;
 }
 
-void google_translator::init()
+void google_translator::init(int do_what)
 {
 	if (key_status <= KEY_UNKNOWN) {
 		api_key_file = GOOGLE_TRANSLATE_API_KEY_FILE;
 		source_lang_var = "source";
 		target_lang_var = "target";
-		init_once();
+		init_once(do_what);
 	}
 }
 
@@ -155,7 +184,7 @@ const char *google_translator::translate(const char *text, long length)
 		return trans.c_str();
 	}
 	else  {
-		cerr << "HTTP REQUEST: " << endl << url << endl;
+		cerr << endl << "HTTP REQUEST: " << endl << url << endl;
 	}
 	cerr << content << endl;
 	return NULL;

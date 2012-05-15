@@ -10,7 +10,7 @@ accept_key () {
 	echo "$token" > Auth.txt
 	key=`echo "$token" | tail -n 1 | cut -f 2 -d "="`
 	key=`echo $key`
-	echo $key > auth_key.txt
+	echo $key > auth_key_local.txt
 	
 	if ! [ -z  $1 ]
 	then

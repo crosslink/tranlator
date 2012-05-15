@@ -25,6 +25,7 @@ int main(int argc, char **argv) {
 		usage(argv[0]);
 	}
 
+	database_mysql::instance().connect();
 	input_manager manager;
 
 	bool has_error_param;
@@ -89,7 +90,6 @@ int main(int argc, char **argv) {
 
 //	if (required_database)
 	manager.set_write_type(article::WRITE_TO_DATABASE);
-		database_mysql::instance().connect();
 
 	manager.set_limit(limit);
 

@@ -16,6 +16,8 @@
 	class google_translator : public pattern_singleton<google_translator>
 	{
 	public:
+		enum {DO_NOTHING, LOAD_KEY};
+
 		static const char *GOOGLE_TRANSLATE_URL_TEMPLATE;
 		static const char *LANGUAGE_PAIR_EN_CS;
 		static const char *LANGUAGE_PAIR_EN_CT;
@@ -52,6 +54,8 @@
 
 		std::string trans;
 
+		bool initialized;
+
 	public:
 		google_translator();
 		virtual ~google_translator();
@@ -62,12 +66,18 @@
 		virtual std::string get_translation(const char *content);
 
 		google_translator& get_instance();
+		google_translator& get_instance(int do_what);
 
 		static void set_lang_pair(const char *langpair);
 		static void set_to_test_key(bool value) { to_test_key = value; }
 		static void set_api_key(const char *key) { api_key = key; }
 
 		bool test_key();
+
+		bool is_initialized() const;
+		void set_initialized(bool initialized);
+
+		void initialize(int do_what = DO_NOTHING);
 
 	protected:
 
@@ -79,8 +89,8 @@
 		void add_text_option(std::string& url, const char *text, long length = 0);
 
 //	private:
-		void init();
-		void init_once();
+		void init(int do_what = DO_NOTHING);
+		void init_once(int do_what = DO_NOTHING);
 		virtual void set_key();
 
 	};
