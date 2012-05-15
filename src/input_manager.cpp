@@ -24,15 +24,17 @@ using namespace std;
 
 std::string input_manager::out_path;
 
-inline const char *remove_redundant_spaces(const char *from, std::string& to, long limit) {
+const char *input_manager::remove_redundant_spaces(const char *from, std::string& to, long limit) {
 	const char *ch = from;
 	to.clear();
 	while (*ch != '\0') {
 		while (*ch != '\0' && *ch == ' ')
 			++ch;
 
-		if (to.length() > limit)
-			return ch;
+		if (limit > 0) {
+			if (to.length() > limit)
+				return ch;
+		}
 
 		while (*ch != '\0' && *ch != ' ')
 			to.push_back(*ch++);
@@ -93,16 +95,17 @@ void input_manager::translate_file(const char *file, long id) {
 		cerr << source->tag << ": " << endl;
 #endif
 
+		std::string shortened;
+
 #if ENABLE_TRANSLATOR == 1
 		std::stringstream fulltran;
-		std::string shorted;
 		const char *end = source_string;
 		do {
-			end = remove_redundant_spaces(end, shorted, limit);
+			end = remove_redundant_spaces(end, shortened, limit);
 	//				string trans = string();
-			cerr << shorted;
-			if (shorted.length() > 0) {
-				const char *trans = translator.translate(shorted.c_str());
+			cerr << shortened;
+			if (shortened.length() > 0) {
+				const char *trans = translator.translate(shortened.c_str());
 				if (trans == NULL) {
 
 		//					exit(-1);
@@ -118,7 +121,8 @@ void input_manager::translate_file(const char *file, long id) {
 		cerr << source->tag << " (Translation): " << fulltran.str() << endl;
 	#endif
 #else
-		cerr << source_string << endl;
+		remove_redundant_spaces(source_string, shortened, limit);
+		cerr << shortened << endl;
 #endif
 
 		delete [] source_string;

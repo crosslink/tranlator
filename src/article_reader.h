@@ -93,6 +93,8 @@ private:
 	void copy_to_current();
 	void copy_to(const char *start, const char *end);
 	void copy_to_section_end();
+
+	void goto_tag_end(char *this_char);
 };
 
 #endif /* ARTICLE_READER_H_ */

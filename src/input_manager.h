@@ -57,6 +57,8 @@ public:
 	static void set_out_path(std::string out_path);
 	static std::string& get_out_path();
 
+	static const char *remove_redundant_spaces(const char *from, std::string& to, long limit = -1);
+
 private:
 	void cleanup();
 	void init();

@@ -505,6 +505,8 @@ void article_reader::read_para() {
 					++test_forward;
 				end_tag = true;
 			}
+			else
+				end_tag = false;
 //			++test_forward;
 			string this_tag("");
 
@@ -537,14 +539,17 @@ void article_reader::read_para() {
 			else if (strcasecmp(this_tag.c_str(), "p") == 0) { // keep the p tags
 				if (end_tag) {
 					previous = current;
-					current_token.length = current - current_token.start;
 					current += strlen(PARA_TAG_END);
-					break;
+					if (current_token.start != NULL) {
+						current_token.length = previous - current_token.start;
+						break;
+					}
 				}
 				else {
 					current += strlen(PARA_TAG_START);
-					copy_to_current();
+
 				}
+				copy_to_current();
 			}
 			else if (strcasecmp(this_tag.c_str(), "image") == 0) {
 //						current_tag = "image";
@@ -556,18 +561,12 @@ void article_reader::read_para() {
 					}
 					break;
 				}
+				previous = current;
+				goto_tag_end(test_forward);
 
 				if (current_token.start != NULL) {
-					current_token.length = current - current_token.start;
+					current_token.length = previous - current_token.start;
 					break;
-				}
-
-				current = test_forward; // only here
-				while (*current != '>'  && *current != '\0'  )
-					++current;
-
-				if (*current != '\0') {
-					++current;
 				}
 
 				if (!end_tag) {
@@ -749,6 +748,17 @@ void article_reader::copy_to_section_end() {
 		}
 //	}
 }
+
+void article_reader::goto_tag_end(char* this_char) {
+	current = this_char; // only here
+	while (*current != '>'  && *current != '\0'  )
+		++current;
+
+	if (*current != '\0') {
+		++current;
+	}
+}
+
 
 
 
