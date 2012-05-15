@@ -35,17 +35,19 @@ google_research_translator& google_research_translator::get_instance()
 	return instance;
 }
 
-void google_research_translator::init()
+void google_research_translator::init(int do_what)
 {
 	if (key_status <= KEY_UNKNOWN) {
 		api_key_file = GOOGLE_TRANSLATE_RESEARCH_API_KEY_FILE;
 		source_lang_var = "sl";
 		target_lang_var = "tl";
-		init_once();
+		init_once(do_what);
 	}
 }
 
-
+void google_research_translator::initialize(int do_what) {
+	init(do_what);
+}
 
 void google_research_translator::set_key()
 {

@@ -24,10 +24,11 @@ public:
 	virtual std::string get_translation(const char *content);
 
 	static google_research_translator& get_instance();
+	virtual void initialize(int do_what = DO_NOTHING);
 
 protected:
 //private:
-	void init();
+	void init(int do_what = DO_NOTHING);
 //	static void set_key();
 	virtual void set_key();
 

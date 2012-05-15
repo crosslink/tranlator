@@ -58,14 +58,19 @@ google_translator::~google_translator()
 void google_translator::init_once(int do_what) {
 	if (do_what == LOAD_KEY) {
 		if (key_status == KEY_UNKNOWN) {
-			const char *key_text = NULL;
-			if (sys_file::exist(api_key_file.c_str()))
-				sys_file::read_entire_file(api_key_file.c_str());
-			else
-				key_text = database_mysql::instance().get_google_translate_key().c_str();
+			if (sys_file::exist(api_key_file.c_str())) {
+				const char *key_text = NULL;
+				key_text = sys_file::read_entire_file(api_key_file.c_str());
+				if (key_text != NULL)
+					api_key = key_text;
 
-			if (key_text != NULL) {
-				api_key = key_text;
+				delete [] key_text;
+			}
+			else {
+				api_key = database_mysql::instance().get_google_translate_key().c_str();
+			}
+
+			if (api_key.length() > 0) {
 				this->set_key();
 				if (to_test_key)
 					test_key();
@@ -77,6 +82,7 @@ void google_translator::init_once(int do_what) {
 			}
 		}
 	}
+	this->initialized = true;
 }
 
 google_translator& google_translator::get_instance(int do_what) {

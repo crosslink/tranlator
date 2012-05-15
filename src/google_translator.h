@@ -77,7 +77,7 @@
 		bool is_initialized() const;
 		void set_initialized(bool initialized);
 
-		void initialize(int do_what = DO_NOTHING);
+		virtual void initialize(int do_what = DO_NOTHING);
 
 	protected:
 
