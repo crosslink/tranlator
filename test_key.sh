@@ -1,5 +1,5 @@
 #!/bin/bash
-token=`cat auth_key.txt`
+token=`cat auth_key_local.txt`
 
 # TEST ERROR
 # 
@@ -11,6 +11,9 @@ then
 elif [ "$value" -eq "2" ]
 then
 	curl -H "Authorization: GoogleLogin auth=$token" "http://translate.google.com/researchapi/translate?sl=en&tl=zh|ko|ja&q=This+is+a+test."
+elif [ "$value" -eq "3" ]
+then
+	curl -H "Authorization: GoogleLogin auth=$token" -IL "http://translate.google.com/researchapi/translate?sl=en&tl=zh&q=A"
 else
 	curl -H "Authorization: GoogleLogin auth=$token" "http://translate.google.com/researchapi/translate?sl=en&tl=zh&q=This+is+a+test."
 fi

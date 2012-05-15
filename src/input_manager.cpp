@@ -111,8 +111,8 @@ void input_manager::translate_file(const char *file, long id) {
 				const char *trans = translator.translate(shortened.c_str());
 				if (trans == NULL) {
 
-							exit(-1);
-//					break;
+//							exit(-1);
+					break;
 				}
 				fulltran << trans;
 				writer.fill(trans);
