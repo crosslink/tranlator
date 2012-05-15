@@ -46,6 +46,9 @@ public:
 	static int ischinese(const unsigned char *here);
 	static int ischinese(const char *here) { return ischinese((const unsigned char *)here); }
 
+	static int is_cjk_punctuation(const unsigned char *here);
+	static int is_cjk_punctuation(const char *here) { return ischinese((const unsigned char *)here); }
+
 	static unsigned long utf8_to_wide(const unsigned char *here);
 	static long utf8_bytes(const unsigned char *here);
 	static long utf8_bytes(const char *here) { return utf8_bytes((const unsigned char *)here); }
