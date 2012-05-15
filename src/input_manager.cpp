@@ -95,8 +95,9 @@ void input_manager::translate_file(const char *file, long id) {
 	reader.read();
 
 	token_string *source = reader.get_next_token(writer);
+	bool error = false;
 	while (source->length > 0) {
-
+		error = false;
 //			reader.copy_to_next_token(writer);
 		char *source_string = new char [source->length + 1];
 		memcpy(source_string, source->start, source->length);
@@ -120,12 +121,14 @@ void input_manager::translate_file(const char *file, long id) {
 				if (trans == NULL) {
 
 //							exit(-1);
+					error = true;
 					break;
 				}
 				fulltran << trans;
 				writer.fill(trans);
 			}
 		} while (end != NULL && *end != '\0');
+
 
 	#ifdef DEBUG
 		cerr << endl;
@@ -139,18 +142,20 @@ void input_manager::translate_file(const char *file, long id) {
 		delete [] source_string;
 		source = reader.get_next_token();
 	}
-	try {
-		writer.write(write_type);
-//		if (read_type == READ_FROM_DATABASE)
-//			database_mysql::instance().finish(doc_id);
-	}
-	catch (translation_write_exception& e) {
-		cerr << "Error: " << e.what() << endl;
-		if ((write_type & article::WRITE_TO_DISK) &&
-				!(write_type & article::WRITE_TO_DATABASE) &&
-				read_type == READ_FROM_DATABASE)
-			database_mysql::instance().fail(doc_id);
-	}
+
+	if (!error)
+		try {
+			writer.write(write_type);
+	//		if (read_type == READ_FROM_DATABASE)
+	//			database_mysql::instance().finish(doc_id);
+		}
+		catch (translation_write_exception& e) {
+			cerr << "Error: " << e.what() << endl;
+			if ((write_type & article::WRITE_TO_DISK) &&
+					!(write_type & article::WRITE_TO_DATABASE) &&
+					read_type == READ_FROM_DATABASE)
+				database_mysql::instance().fail(doc_id);
+		}
 }
 
 void input_manager::load_from_disk() {
@@ -168,12 +173,15 @@ void input_manager::load_from_disk() {
 
 void input_manager::load_from_database() {
 	std::vector<long> container;
-	database_mysql::instance().fill(container);
 
-	for (int i = 0; i < container.size(); ++i) {
-		long id = container[i];
-		string file = in_corpus.id2docpath(id);
-		translate_file(file.c_str(), id);
+	database_mysql::instance().fill(container);
+	while (container.size() > 0) {
+		for (int i = 0; i < container.size(); ++i) {
+			long id = container[i];
+			string file = in_corpus.id2docpath(id);
+			translate_file(file.c_str(), id);
+		}
+		database_mysql::instance().fill(container);
 	}
 }
 

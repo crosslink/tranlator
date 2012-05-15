@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.63])
-AC_INIT([corpus-translator], [0.11], [lingxiang.tang@gmailc.om])
+AC_INIT([corpus-translator], [0.12], [lingxiang.tang@gmailc.om])
 AC_CONFIG_SRCDIR([src/thread_master.h])
 #AC_CONFIG_HEADERS([config.h])
 

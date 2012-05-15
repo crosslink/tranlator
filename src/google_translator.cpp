@@ -190,9 +190,14 @@ const char *google_translator::translate(const char *text, long length)
 		return trans.c_str();
 	}
 	else  {
-		cerr << endl << "HTTP REQUEST: " << endl << url << endl;
+		cerr << content << endl;
+		if (response_code == 401){
+			exit(-4);
+		}
+		else{
+			cerr << endl << "HTTP REQUEST: " << endl << url << endl;
+		}
 	}
-	cerr << content << endl;
 	return NULL;
 }
 
