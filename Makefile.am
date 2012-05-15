@@ -88,8 +88,10 @@ HEADER_FILES = $(SOURCE_DIR)/*.h
 SQL_FILES = $(SQL_DIR)/*.sql
 
 EXTRA_DIST = \
+	makefile \
 	files/test.xml \
 	files/google_translate_research_api_example_result.xml \
 	sql/database.sql \
+	sql/others.sql \
 	test_key.sh \
 	update_key.sh
