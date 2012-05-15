@@ -154,6 +154,9 @@ const char *google_translator::translate(const char *text, long length)
 		trans = get_translation(content);
 		return trans.c_str();
 	}
+	else  {
+		cerr << "HTTP REQUEST: " << endl << url << endl;
+	}
 	cerr << content << endl;
 	return NULL;
 }

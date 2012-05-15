@@ -76,6 +76,8 @@ void input_manager::translate_file(const char *file, long id) {
 	writer.set_target_lang(target_lang);
 
 //		reader.copy_to_next_token(writer);
+	cerr << "processing doc of id (" << id << ")" << endl;
+
 	long doc_id = id;
 
 	if (doc_id == -1)
@@ -135,8 +137,8 @@ void input_manager::translate_file(const char *file, long id) {
 	}
 	catch (translation_write_exception& e) {
 		cerr << "Error: " << e.what() << endl;
-		if ((write_type & article::WRITE_TO_DISK) == article::WRITE_TO_DISK &&
-				(write_type & article::WRITE_TO_DATABASE) != article::WRITE_TO_DATABASE &&
+		if ((write_type & article::WRITE_TO_DISK) &&
+				!(write_type & article::WRITE_TO_DATABASE) &&
 				read_type == READ_FROM_DATABASE)
 			database_mysql::instance().fail(doc_id);
 	}
