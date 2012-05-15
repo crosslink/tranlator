@@ -536,6 +536,24 @@ void article_reader::read_para() {
 					copy_to_current();
 				}
 			}
+			else if (strcasecmp(this_tag.c_str(), "ss1") == 0) { // keep the p tags
+				previous = current;
+				goto_tag_end(test_forward);
+
+				if (end_tag) {
+					if (current_token.start != NULL) {
+						current_token.length = previous - current_token.start;
+						break;
+					}
+					else
+						copy_to_current();
+				}
+				else {
+					copy_to_current();
+					read_element_text("st");
+					break;
+				}
+			}
 			else if (strcasecmp(this_tag.c_str(), "p") == 0) { // keep the p tags
 				if (end_tag) {
 					previous = current;
