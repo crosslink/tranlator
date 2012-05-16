@@ -153,17 +153,17 @@ void article_reader::process() {
 		wrap_up_to_end();
 	}
 }
+bool article_reader::read() {
+	bool result =  article::read();
 
-void article_reader::read() {
-	article::read();
-
-	if (content != NULL) {
+	if (result && content != NULL) {
 		current = content;
 		previous = current;
 
 		para_start = first_para = strstr(current, "<p>");
 		sec_start = first_section = strstr(current, "<sec>");
 	}
+	return result;
 }
 
 void article_reader::read_title() {

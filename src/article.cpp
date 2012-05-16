@@ -40,15 +40,20 @@ void article::init() {
 	doc_id = -1;
 }
 
-void article::read() {
+bool article::read() {
 //	char *bytes = sys_file::read_entire_file(file_path.c_str());
 //	content = string(bytes);
-	if (sys_file::exist(file_path.c_str()))
+	bool result = false;
+	if (sys_file::exist(file_path.c_str())) {
 		content = sys_file::read_entire_file(file_path.c_str());
 
-	if (content == NULL)
-		cerr << "Error: reading file " << file_path << endl;
+		if (content == NULL)
+			cerr << "Error: reading file " << file_path << endl;
+		else
+			result = true;
+	}
 //	delete [] bytes;
+	return result;
 }
 
 void article::write() {

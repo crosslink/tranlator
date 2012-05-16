@@ -56,7 +56,7 @@ public:
 	void copy_to_next_token(article_writer& writer);
 	token_string *get_next_token(article_writer& writer);
 
-	virtual void read();
+	virtual bool read();
 
 	static char *string_clean(token_string& token, long lower_case_only = 0);
 

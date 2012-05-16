@@ -29,7 +29,7 @@ public:
     article();
     article(const char* file);
     virtual ~article();
-    virtual void read();
+    virtual bool read();
     virtual void write();
     virtual void write(int write_type);
     virtual void write(const char* content);
