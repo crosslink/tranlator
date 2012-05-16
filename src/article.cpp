@@ -43,7 +43,11 @@ void article::init() {
 void article::read() {
 //	char *bytes = sys_file::read_entire_file(file_path.c_str());
 //	content = string(bytes);
-	content = sys_file::read_entire_file(file_path.c_str());
+	if (sys_file::exist(file_path.c_str()))
+		content = sys_file::read_entire_file(file_path.c_str());
+
+	if (content == NULL)
+		cerr << "Error: reading file " << file_path << endl;
 //	delete [] bytes;
 }
 

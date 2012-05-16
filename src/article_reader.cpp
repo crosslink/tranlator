@@ -67,6 +67,8 @@ article_reader::article_reader(const char *file) : article(file) {
 	first_section = NULL;
 	next_section = NULL;
 	sec_start = NULL;
+
+	init_token();
 }
 
 article_reader::~article_reader() {
@@ -78,8 +80,10 @@ article_reader::~article_reader() {
  */
 
 token_string *article_reader::get_next_token() {
-	process();
-	current_token.tag = current_tag.c_str();
+	if (current != NULL && *current != '\0') {
+		process();
+		current_token.tag = current_tag.c_str();
+	}
 	return &current_token;
 }
 
@@ -89,10 +93,11 @@ void article_reader::copy_to_next_token(article_writer& writer) {
 
 token_string * article_reader::get_next_token(article_writer& the_writer) {
 	writer = &the_writer;
-
-	progress = COMMENT;
-	process();
-	current_token.tag = current_tag.c_str();
+	if (current != NULL && *current != '\0') {
+		progress = COMMENT;
+		process();
+		current_token.tag = current_tag.c_str();
+	}
 	return &current_token;
 }
 
@@ -151,11 +156,14 @@ void article_reader::process() {
 
 void article_reader::read() {
 	article::read();
-	current = content;
-	previous = current;
 
-	para_start = first_para = strstr(current, "<p>");
-	sec_start = first_section = strstr(current, "<sec>");
+	if (content != NULL) {
+		current = content;
+		previous = current;
+
+		para_start = first_para = strstr(current, "<p>");
+		sec_start = first_section = strstr(current, "<sec>");
+	}
 }
 
 void article_reader::read_title() {
