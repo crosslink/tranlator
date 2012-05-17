@@ -728,8 +728,11 @@ void article_reader::wrap_up_to_body() {
 		previous = current;
 	}
 	else {
-		string msg = string("The article is not well-formed in the <bdy>: ") + file_path;
-		throw msg.c_str();
+		// there is no body text
+		// continue with another document
+		progress = EXTERNAL_LINKS + 1;
+		//string msg = string("The article is not well-formed in the <bdy>: ") + file_path;
+		//throw msg.c_str();
 	}
 }
 
