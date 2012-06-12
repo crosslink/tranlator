@@ -32,6 +32,7 @@ article::~article() {
 }
 
 void article::write(const char* this_content, int write_type) {
+	cerr << this_content << endl;
 	write(this_content, file_path.c_str(), write_type);
 }
 
@@ -68,12 +69,13 @@ std::string article::id2dir(unsigned long id) {
 }
 
 void article::write(const char* this_content) {
+//	cerr << this_content << endl;
 	write(this_content, file_path.c_str(), WRITE_TO_DISK);
 }
 
 void article::write(const char* this_content, const char *path, int write_type) {
 	if (database_mysql::instance().is_connected()) {
-		database_mysql::instance().finish(doc_id);
+		database_mysql::instance().finish(doc_id, source_lang.c_str());
 
 		if (write_type & WRITE_TO_DATABASE) {
 	//		try {

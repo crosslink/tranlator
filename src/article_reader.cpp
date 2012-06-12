@@ -67,6 +67,7 @@ article_reader::article_reader(const char *file) : article(file) {
 	first_section = NULL;
 	next_section = NULL;
 	sec_start = NULL;
+	next_para = NULL;
 
 	init_token();
 }
@@ -160,8 +161,11 @@ bool article_reader::read() {
 		current = content;
 		previous = current;
 
-		para_start = first_para = strstr(current, "<p>");
+		para_start = first_para = strstr(current, PARA_TAG_START);
 		sec_start = first_section = strstr(current, "<sec>");
+
+//		next_para = strstr(para_start + 3, PARA_TAG_START);
+//		if (next_para)
 	}
 	return result;
 }
@@ -239,6 +243,12 @@ void article_reader::read_abstract() {
 				return;
 			}
 
+		}
+	}
+	else {
+		if (current >= body_end) {
+			after_reading_abstract();
+			return;
 		}
 	}
 
@@ -493,14 +503,29 @@ void article_reader::read_para() {
 
 	char *test_forward;
 	bool end_tag = false;
+	bool found_text = false;
 	while (*current != '\0') {
 
-		if (current >= next_para) {
-			if (current_token.start != NULL)
-				current_token.length = current - current_token.start;
+		if (next_para == NULL) {
+			if (current >= body_end)
+				break;
+
+			if (*current == '<' && current_token.start != NULL)
+				found_text = true;
+		}
+		else {
+			if (current >= next_para && current_token.start != NULL)
+				found_text = true;
+		}
+
+		if (found_text) {
+			current_token.length = current - current_token.start;
 			previous = current;
 			break;
 		}
+		else
+			found_text = false;
+
 
 		if (*current == '<')			// then remove the XML tags
 		{
@@ -620,9 +645,17 @@ void article_reader::read_para() {
 		}
 		else
 		{
-			if (current_token.start == NULL)
-				current_token.start = current;
-			current++;
+			if (current_token.start == NULL && isspace(*current)) {
+				while (isspace(*current))
+					++current;
+				copy_to_current();
+			}
+			else {
+				if (current_token.start == NULL) {
+					current_token.start = current;
+				}
+				current++;
+			}
 		}
 	}
 
@@ -719,7 +752,8 @@ void article_reader::read_element_text(const char* tag_name) {
 void article_reader::wrap_up_to_body() {
 	static const char *BODY_TAG_START = "<bdy>";
 
-	start = strstr(current, BODY_TAG_START);
+	body_start = start = strstr(current, BODY_TAG_START);
+	body_end = strstr(body_start + 5, "</bdy>");
 	if (start != NULL) {
 		start += strlen(BODY_TAG_START);
 

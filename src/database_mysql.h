@@ -41,18 +41,18 @@ public:
 
 	void execute_query(std::string);
 
-	void fill(std::vector<long>& container);
-	void finish(std::vector<long>& container);
-	void fail(std::vector<long>& container);
-	void processing(std::vector<long>& container);
+	void fill(std::vector<long>& container, const char *source_lang);
+	void finish(std::vector<long>& container, const char *source_lang);
+	void fail(std::vector<long>& container, const char *source_lang);
+	void processing(std::vector<long>& container, const char *source_lang);
 
-	void finish(long id);
-	void fail(long id);
+	void finish(long id, const char *source_lang);
+	void fail(long id, const char *source_lang);
 
 	std::string get_google_translate_key();
 
-	void update_status(std::vector<long>& container, int type, int value);
-	void update_translation(long id, const char *translation, const char *target_lang, const char* source_lang);
+	void update_status(std::vector<long>& container, int type, int value, const char *source_lang);
+	void update_translation(long id, const char *translation, const char *target_lang, const char *source_lang);
 	void update_google_translate_key(const char *key);
 
 	bool is_connected() { return connected; }

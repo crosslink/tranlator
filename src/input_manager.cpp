@@ -101,43 +101,51 @@ void input_manager::translate_file(const char *file, long id) {
 	//			reader.copy_to_next_token(writer);
 			char *source_string = new char [source->length + 1];
 			memcpy(source_string, source->start, source->length);
+			const char *end = source_string;
 			source_string[source->length] = '\0';
 	//				string source_str(source->start, source->length);
-#ifdef DEBUG
-			cerr << source->tag << ": " << endl;
-#endif
+//			while (isspace(*end)) {
+//				++end;
+//				writer.fill(end, 1);
+//			}
 
-			std::string shortened;
+			if (*end != '\0') {
+				#ifdef DEBUG
+				cerr << source->tag << ": " << endl;
+				#endif
 
-#if ENABLE_TRANSLATOR == 1
-			std::stringstream fulltran;
-			const char *end = source_string;
-			do {
-				end = remove_redundant_spaces(end, shortened, limit);
-		//				string trans = string();
-				cerr << shortened;
-				if (shortened.length() > 0) {
-					const char *trans = translator.translate(shortened.c_str());
-					if (trans == NULL) {
+				std::string shortened;
 
-	//							exit(-1);
-						error = true;
-						break;
+				#if ENABLE_TRANSLATOR == 1
+				std::stringstream fulltran;
+
+				do {
+					end = remove_redundant_spaces(end, shortened, limit);
+			//				string trans = string();
+					cerr << shortened;
+					if (shortened.length() > 0) {
+						const char *trans = translator.translate(shortened.c_str());
+						if (trans == NULL) {
+
+		//							exit(-1);
+							error = true;
+							break;
+						}
+						fulltran << trans;
+						writer.fill(trans);
 					}
-					fulltran << trans;
-					writer.fill(trans);
-				}
-			} while (end != NULL && *end != '\0');
+				} while (end != NULL && *end != '\0');
 
 
-#ifdef DEBUG
-			cerr << endl;
-			cerr << source->tag << " (Translation): " << fulltran.str() << endl;
-#endif
-#else
-			remove_redundant_spaces(source_string, shortened, limit);
-			cerr << shortened << endl;
-#endif
+				#ifdef DEBUG
+				cerr << endl;
+				cerr << source->tag << " (Translation): " << fulltran.str() << endl;
+				#endif
+				#else
+				remove_redundant_spaces(source_string, shortened, limit);
+				cerr << shortened << endl;
+				#endif
+			}
 
 			delete [] source_string;
 			source = reader.get_next_token();
@@ -154,7 +162,7 @@ void input_manager::translate_file(const char *file, long id) {
 				if ((write_type & article::WRITE_TO_DISK) &&
 						!(write_type & article::WRITE_TO_DATABASE) &&
 						read_type == READ_FROM_DATABASE)
-					database_mysql::instance().fail(doc_id);
+					database_mysql::instance().fail(doc_id, source_lang.c_str());
 			}
 	}
 }
@@ -175,14 +183,14 @@ void input_manager::load_from_disk() {
 void input_manager::load_from_database() {
 	std::vector<long> container;
 
-	database_mysql::instance().fill(container);
+	database_mysql::instance().fill(container, source_lang.c_str());
 	while (container.size() > 0) {
 		for (int i = 0; i < container.size(); ++i) {
 			long id = container[i];
 			string file = in_corpus.id2docpath(id);
 			translate_file(file.c_str(), id);
 		}
-		database_mysql::instance().fill(container);
+		database_mysql::instance().fill(container, source_lang.c_str());
 	}
 }
 

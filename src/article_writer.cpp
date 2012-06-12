@@ -10,6 +10,7 @@
 
 #include <string>
 #include <ctype.h>
+#include <iostream>
 
 #include "string_utils.h"
 
@@ -22,10 +23,12 @@ article_writer::article_writer(const char *file) : article() {
 }
 
 void article_writer::write() {
+//	cerr << out_content << endl;
 	article::write(out_content.c_str());
 }
 
 void article_writer::write(int write_type) {
+//	cerr << out_content << endl;
 	article::write(out_content.c_str(), write_type);
 }
 
@@ -63,6 +66,8 @@ void article_writer::fill(const char* more, size_t length) {
 		out_content.append(more, length);
 	else
 		out_content.append(more);
+
+//	cerr << out_content << endl;
 }
 
 void article_writer::initialize_output_corpus() {

@@ -89,13 +89,13 @@ void database_mysql::execute_query(std::string query) {
 	  }
 }
 
-void database_mysql::fill(std::vector<long>& container) {
+void database_mysql::fill(std::vector<long>& container, const char *source_lang) {
 	MYSQL_RES *result;
 	MYSQL_ROW row;
 
-	static const string template_query("select id from " + corpus_table + " where status = 0 and result = 0");
-	string limits = " limit " + number_to_string(number_of_doc);
-	string query = template_query + limits;
+	static const string template_query("select id from " + corpus_table + " where status = 0 and result = 0 and lang='");
+	string limits = "' limit " + number_to_string(number_of_doc);
+	string query = template_query + source_lang + limits;
 
 	mysql_query(connection, query.c_str());
 	result = mysql_store_result(connection);
@@ -115,32 +115,32 @@ void database_mysql::fill(std::vector<long>& container) {
 		  }
 	  }
 
-	  processing(container);
+	  processing(container, source_lang);
 	}
 }
 
 
 
-void database_mysql::finish(std::vector<long>& container) {
-	update_status(container, 0, 1);
-	update_status(container, 1, 0);
+void database_mysql::finish(std::vector<long>& container, const char *source_lang) {
+	update_status(container, 0, 1, source_lang);
+	update_status(container, 1, 0, source_lang);
 }
 
 
-void database_mysql::finish(long id) {
+void database_mysql::finish(long id, const char *source_lang) {
 	std::vector<long> tmp_vector;
 	tmp_vector.push_back(id);
-	finish(tmp_vector);
+	finish(tmp_vector, source_lang);
 }
 
-void database_mysql::fail(long id) {
+void database_mysql::fail(long id, const char *source_lang) {
 	std::vector<long> tmp_vector;
 	tmp_vector.push_back(id);
-	fail(tmp_vector);
+	fail(tmp_vector, source_lang);
 }
 
 
-void database_mysql::update_status(std::vector<long>& container, int type, int value) {
+void database_mysql::update_status(std::vector<long>& container, int type, int value, const char *source_lang) {
 	if (container.size() <= 0)
 		return;
 
@@ -165,21 +165,21 @@ void database_mysql::update_status(std::vector<long>& container, int type, int v
 		error_message();
 }
 
-void database_mysql::processing(std::vector<long>& container) {
-	update_status(container, 1, 1); //
+void database_mysql::processing(std::vector<long>& container, const char *source_lang) {
+	update_status(container, 1, 1, source_lang); //
 }
 
-void database_mysql::fail(std::vector<long>& container) {
-	update_status(container, 0, 0); // result, 0:unfished
-	update_status(container, 1, -1); // status, processed but with error (-1);
+void database_mysql::fail(std::vector<long>& container, const char *source_lang) {
+	update_status(container, 0, 0, source_lang); // result, 0:unfished
+	update_status(container, 1, -1, source_lang); // status, processed but with error (-1);
 }
 
-void database_mysql::update_translation(long id, const char* translation,
-		const char* target_lang, const char* source_lang) {
+void database_mysql::update_translation(long id, const char *translation,
+		const char *target_lang, const char *source_lang) {
 	std::stringstream query_buffer;
 	string escaped_string = escape_string(translation);
 	//query_buffer << "update translations set translation='" << escaped_string << "'" << " where id =" << id << " and source_lang = '" << source_lang << "' and target_lang = '" << target_lang << "'";
-	query_buffer << "insert into translations (translation, id, target_lang) values ('" << escaped_string << "', " << id << ", '" << target_lang << "') on duplicate key update translation='" << escaped_string <<  "'";
+	query_buffer << "insert into translations (translation, id, target_lang, source_lang) values ('" << escaped_string << "', " << id << ", '" << target_lang << "','" << source_lang << "') on duplicate key update translation='" << escaped_string <<  "'";
 	string query = query_buffer.str();
 #ifdef DEBUG
 	cerr << "QUERY:" << endl << query << endl;
@@ -211,7 +211,7 @@ std::string database_mysql::get_google_translate_key() {
 	 return "";
 }
 
-void database_mysql::update_google_translate_key(const char* key) {
+void database_mysql::update_google_translate_key(const char *key) {
 	MYSQL_RES *result;
 
 	static const string template_query_update_key("UPDATE `google_translate_key` SET `key_value`='");
@@ -230,7 +230,7 @@ void database_mysql::error_message() {
 	exit(-2);
 }
 
-std::string database_mysql::escape_string(const char* in) {
+std::string database_mysql::escape_string(const char *in) {
     char *to = new char[strlen(in)*2+1];
     mysql_real_escape_string(connection, to, in, strlen(in));
     string result(to);

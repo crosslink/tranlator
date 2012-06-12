@@ -9,6 +9,7 @@
 #define ARTICLE_READER_H_
 
 #include <string>
+#include <vector>
 
 #include "article.h"
 #include "article_writer.h"
@@ -41,12 +42,15 @@ private:
 
 	char *start, *end;
 	const char *body_start;
+	const char *body_end;
 	const char *first_para;  // if
 	const char *first_section; // anything before the first section is abstract
 	const char *next_section;
 	const char *sec_start;
 	const char *para_start;
 	const char *next_para;
+
+	std::vector<std::string> tag_stack;
 
 public:
 	article_reader(const char *file);
