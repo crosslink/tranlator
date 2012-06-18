@@ -753,9 +753,10 @@ void article_reader::wrap_up_to_body() {
 	static const char *BODY_TAG_START = "<bdy>";
 
 	body_start = start = strstr(current, BODY_TAG_START);
-	body_end = strstr(body_start + 5, "</bdy>");
+
 	if (start != NULL) {
 		start += strlen(BODY_TAG_START);
+		body_end = strstr(start, "</bdy>");
 
 		current = start;
 		copy_to(previous, current);
