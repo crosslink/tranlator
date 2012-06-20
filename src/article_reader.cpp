@@ -405,7 +405,7 @@ void article_reader::read_section() {
 
 //	const char *sec_start;
 	copy_to_current();
-	if (sec_start != NULL) {
+	if (sec_start != NULL && *current != '\0') {
 		if (sec_start == current) {
 			// the first st is the section title of current section
 			read_element_text("st");
