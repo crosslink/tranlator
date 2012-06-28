@@ -77,13 +77,13 @@ private:
 	void read_notes();
 
 	void read_section();
-	void read_para();
+	void read_para(const char *end);
 
 	void after_reading_abstract();
-	void after_reading_a_para();
+	void after_reading_a_para(const char *end);
 	void after_reading_a_section();
 
-	void get_para_start(const char *from);
+	void get_para_start(const char *from, const char *end = NULL);
 
 	void create_comment();
 	void reconstruct_comment();

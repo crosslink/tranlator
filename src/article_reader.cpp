@@ -252,7 +252,7 @@ void article_reader::read_abstract() {
 		}
 	}
 
-	read_para();
+	read_para(first_section);
 	if (current_token.length == 0)
 		++progress;
 }
@@ -436,12 +436,12 @@ void article_reader::read_section() {
 				else {
 					if (current_token.length == 0) {
 						if (current == para_start)
-							read_para();
+							read_para(next_section);
 						else
 							read_element_text(NULL, next_section);
 					}
 					else {
-						after_reading_a_para();
+						after_reading_a_para(next_section);
 						return;
 					}
 				}
@@ -451,7 +451,7 @@ void article_reader::read_section() {
 			if (para_start != NULL && para_start < next_section) {
 				copy_to_current();
 				if (current == para_start)
-					read_para();
+					read_para(next_section);
 				else
 					read_element_text(NULL, next_section);
 			}
@@ -475,16 +475,24 @@ void article_reader::after_reading_a_section() {
 	next_para = NULL;
 	if (sec_start != NULL) {
 		copy_to_current();
-		copy_to(current, sec_start);
-		current = (char *)sec_start;
+		current = (char *)sec_start + strlen(SECTION_TAG_START);
+		copy_to_current();
+//		copy_to(current, sec_start);
+//		current = (char *)sec_start;
 
-		sec_start + strlen(SECTION_TAG_START);
+//		sec_start + strlen(SECTION_TAG_START);
 		get_para_start(sec_start);
+//		if (para_start == NULL) {
+//			if (from < para_start) {
+//				next_para = para_start;
+//				para_start = from;
+//			}
+//		}
 
 		while (isspace(*para_start))
 			++para_start;
 
-		next_section = strstr(sec_start /*+ strlen(SECTION_TAG_START)*/, SECTION_TAG_START);
+		next_section = strstr(current, SECTION_TAG_START);
 
 		if (next_section == NULL) {
 			next_section = strstr(para_start, SECTION_TAG_END);
@@ -505,7 +513,7 @@ void article_reader::after_reading_a_section() {
  * current version skip the table
  * const char *p_start, const char *p_end
  */
-void article_reader::read_para() {
+void article_reader::read_para(const char *where_to_stop) {
 	static const char *IMAGE_TAG_END = "</image>";
 
 	current_tag = "paragraph";
@@ -572,7 +580,7 @@ void article_reader::read_para() {
 						current_token.length = current - current_token.start;
 					current += strlen(SECTION_TAG_END);
 					after_reading_a_section();
-					break;
+					return;
 				}
 				else {
 					current += strlen(SECTION_TAG_START);
@@ -674,16 +682,16 @@ void article_reader::read_para() {
 	}
 
 //			para_start = current;
-	after_reading_a_para();
+	after_reading_a_para(where_to_stop);
 }
 
 
-void article_reader::after_reading_a_para() {
+void article_reader::after_reading_a_para(const char *where_to_stop) {
 //	copy_to_current();
 	while (isspace(*current))
 		++current;
 
-	get_para_start(current);
+	get_para_start(current, where_to_stop);
 }
 
 void article_reader::read_element_text(const char *tag_name, const char *stop) {
@@ -756,6 +764,8 @@ void article_reader::wrap_up_to_body() {
 	if (start != NULL) {
 		start += strlen(BODY_TAG_START);
 		body_end = strstr(start, "</bdy>");
+		if (first_section == NULL)
+			first_section = body_end;
 
 		current = start;
 		copy_to(previous, current);
@@ -811,23 +821,23 @@ void article_reader::copy_to_section_end() {
 //	}
 }
 
-void article_reader::get_para_start(const char* from) {
+void article_reader::get_para_start(const char *from, const char *where_to_stop) {
 	para_start = strstr(from, PARA_TAG_START);
 
-	if (para_start != NULL) {
-		if (from < para_start) {
-			next_para = para_start;
+	if (para_start == NULL || (where_to_stop != NULL && para_start > where_to_stop)) {
+//		if (from < para_start) {
+			next_para = where_to_stop;
 			para_start = from;
-		}
-		else {
-			next_para = strstr(para_start + strlen(PARA_TAG_START), PARA_TAG_START);
-			if (next_para == NULL) {
-				next_para = strstr(para_start + strlen(PARA_TAG_END), PARA_TAG_END);
+//		}
+	}
+	else {
+		next_para = strstr(para_start + strlen(PARA_TAG_START), PARA_TAG_START);
+		if (next_para == NULL) {
+			next_para = strstr(para_start + strlen(PARA_TAG_END), PARA_TAG_END);
 
-				if (next_para == NULL) {
-					string msg = string("The article is not well-formed, <p> missing </p>: ") + file_path;
-					throw msg.c_str();
-				}
+			if (next_para == NULL) {
+				string msg = string("The article is not well-formed, <p> missing </p>: ") + file_path;
+				throw msg.c_str();
 			}
 		}
 	}
