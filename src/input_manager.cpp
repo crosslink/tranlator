@@ -111,39 +111,39 @@ void input_manager::translate_file(const char *file, long id) {
 
 			if (*end != '\0') {
 				#ifdef DEBUG
-				cerr << source->tag << ": " << endl;
+					cerr << source->tag << ": " << endl;
 				#endif
 
 				std::string shortened;
 
 				#if ENABLE_TRANSLATOR == 1
-				std::stringstream fulltran;
+					std::stringstream fulltran;
 
-				do {
-					end = remove_redundant_spaces(end, shortened, limit);
-			//				string trans = string();
-					cerr << shortened;
-					if (shortened.length() > 0) {
-						const char *trans = translator.translate(shortened.c_str());
-						if (trans == NULL) {
+					do {
+						end = remove_redundant_spaces(end, shortened, limit);
+				//				string trans = string();
+						cerr << shortened;
+						if (shortened.length() > 0) {
+							const char *trans = translator.translate(shortened.c_str());
+							if (trans == NULL) {
 
-		//							exit(-1);
-							error = true;
-							break;
+			//							exit(-1);
+								error = true;
+								break;
+							}
+							fulltran << trans;
+							writer.fill(trans);
 						}
-						fulltran << trans;
-						writer.fill(trans);
-					}
-				} while (end != NULL && *end != '\0');
+					} while (end != NULL && *end != '\0');
 
 
-				#ifdef DEBUG
-				cerr << endl;
-				cerr << source->tag << " (Translation): " << fulltran.str() << endl;
-				#endif
+					#ifdef DEBUG
+					cerr << endl;
+					cerr << source->tag << " (Translation): " << fulltran.str() << endl;
+					#endif
 				#else
-				remove_redundant_spaces(source_string, shortened, limit);
-				cerr << shortened << endl;
+					remove_redundant_spaces(source_string, shortened);
+					cerr << shortened << endl;
 				#endif
 			}
 

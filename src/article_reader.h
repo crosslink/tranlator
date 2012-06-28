@@ -68,7 +68,7 @@ private:
 	void init_token();
 	void process();
 
-	void read_element_text(const char *tag_name = NULL);
+	void read_element_text(const char *tag_name = NULL, const char *stop = NULL);
 
 	void read_title();
 	void read_categories();
@@ -82,6 +82,8 @@ private:
 	void after_reading_abstract();
 	void after_reading_a_para();
 	void after_reading_a_section();
+
+	void get_para_start(const char *from);
 
 	void create_comment();
 	void reconstruct_comment();
