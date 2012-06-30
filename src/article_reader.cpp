@@ -110,7 +110,7 @@ void article_reader::process() {
 		previous = current;
 	}
 
-	while (progress <= EXTERNAL_LINKS && current_token.length == 0) {
+	while (current != '\0' && progress <= EXTERNAL_LINKS && current_token.length == 0) {
 		switch (progress) {
 		case COMMENT:
 			this->reconstruct_comment();
@@ -462,6 +462,7 @@ void article_reader::read_section() {
 		}
 	}
 	else {
+		sec_start = NULL;
 		if (progress >= NOTES)
 			progress = ARTICLE_END;
 		else
@@ -710,46 +711,52 @@ void article_reader::read_element_text(const char *tag_name, const char *stop) {
 	}
 
 	start = strstr(current, tag_start.c_str());
-	if (start != NULL && (stop == NULL || start < stop)) {
-		start += tag_start.length();
+	if (start != NULL) {
+		if (stop == NULL || start <= stop) {
+			start += tag_start.length();
 
-		if (tag_start == "<") {
-			while (*start != '>' && !isspace(*start))
-				current_tag.push_back(*start++);
+			if (tag_start == "<") {
+				while (*start != '>' && !isspace(*start))
+					current_tag.push_back(*start++);
 
-			while (*start != '>' && *start != '\0' )
-				++start;
-//			start = strchr(++start, '>');
-			if (*start != '\0') {
-				++start;
+				while (*start != '>' && *start != '\0' )
+					++start;
+	//			start = strchr(++start, '>');
+				if (*start != '\0') {
+					++start;
+				}
+				else {
+					string msg = string("The article is not well-formed, missing < or >: ") + file_path;
+					throw msg.c_str();
+				}
 			}
-			else {
-				string msg = string("The article is not well-formed, missing < or >: ") + file_path;
-				throw msg.c_str();
+
+			while (isspace(*start))
+				++start;
+
+			current_token.start = start;
+			copy_to(current, start);
+			previous = current = start;
+
+			end = strstr(start, tag_end.c_str());
+			if (end != NULL) {
+				previous = current;
+				current_token.length = end - start;
+				if (tag_end != "<") {
+					previous = end;
+					current = end += tag_end.length();
+				}
+				else
+					current = end;
 			}
 		}
-
-		while (isspace(*start))
-			++start;
-
-		current_token.start = start;
-		copy_to(current, start);
-		previous = current = start;
-
-		end = strstr(start, tag_end.c_str());
-		if (end != NULL) {
-			previous = current;
-			current_token.length = end - start;
-			if (tag_end != "<") {
-				previous = end;
-				current = end += tag_end.length();
-			}
-			else
-				current = end;
+		else {
+			current += tag_start.length();
 		}
 	}
 	else {
 		current_tag = "";
+		current += tag_start.length();
 	}
 
 	while (current_token.length > 0 && isspace(current_token.start[current_token.length -1]))
