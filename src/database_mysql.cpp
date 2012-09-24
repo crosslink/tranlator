@@ -95,7 +95,7 @@ void database_mysql::fill(std::vector<long>& container, const char *source_lang)
 
 	static const string template_query("select id from " + corpus_table + " where status = 0 and result = 0 and lang='");
 	string limits = "' limit " + number_to_string(number_of_doc);
-	string query = template_query + source_lang + limits;
+	string query = template_query + source_lang + limits + " for update";
 
 	mysql_query(connection, query.c_str());
 	result = mysql_store_result(connection);

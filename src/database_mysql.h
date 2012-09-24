@@ -17,7 +17,7 @@
 
 class database_mysql : public pattern_singleton<database_mysql> {
 public:
-	const static int DEFAULT_NUMBER_OF_DOC_PER_REQUEST = 5;
+	const static int DEFAULT_NUMBER_OF_DOC_PER_REQUEST = 100;
 	const static char *DEFAULT_CORPUS_TABLE;
 
 private:
