@@ -59,13 +59,18 @@ libgoogle_translate_la_LIBFLAGS =
 		
 test_PROGRAMES = test_parse_translation	test_database test_spaces_removal
 		
-noinst_PROGRAMS = corpus_translator google_translate $(test_PROGRAMES)
+noinst_PROGRAMS = corpus_translator google_translate reset_article $(test_PROGRAMES)
 
 corpus_translator_SOURCES = \
 	$(SOURCE_DIR)/corpus_translator.cpp
 corpus_translator_LDADD = -lpthread -lcurl -lgoogle_translate
 corpus_translator_DEPENDENCIES = libgoogle_translate.la
 corpus_translator_LDFLAGS = -static
+
+google_translate_SOURCES = $(TEST_DIR)/google_translate.cpp
+google_translate_LDADD = -lpthread -lcurl -lgoogle_translate
+google_translate_DEPENDENCIES = libgoogle_translate.la
+google_translate_LDFLAGS = -static
 
 google_translate_SOURCES = $(TEST_DIR)/google_translate.cpp
 google_translate_LDADD = -lpthread -lcurl -lgoogle_translate
