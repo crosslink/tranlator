@@ -14,4 +14,4 @@ SOURCES = \
 
 LIBRARIES = curl
 
-include ~/src/edam.mk
+#include ~/src/edam.mk

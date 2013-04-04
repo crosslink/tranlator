@@ -60,7 +60,7 @@
 		google_translator();
 		virtual ~google_translator();
 
-		const char *translate(const char *text, long length = -1);
+		std::string& translate(const char *text, long length = -1);
 		static bool has_valid_key();
 
 		virtual std::string get_translation(const char *content);

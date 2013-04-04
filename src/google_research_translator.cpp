@@ -16,7 +16,7 @@
 using namespace std;
 
 const char *google_research_translator::GOOGLE_TRANSLATE_RESEARCH_URL_TEMPLATE = "http://translate.google.com/researchapi/translate?";
-const char *google_research_translator::GOOGLE_TRANSLATE_RESEARCH_API_KEY_FILE = "auth_key.txt";
+const char *google_research_translator::GOOGLE_TRANSLATE_RESEARCH_API_KEY_FILE = "auth_key_local.txt";
 const char *google_research_translator::GOOGLE_TRANSLATE_RESEARCH_AUTH_HEADER = "Authorization: GoogleLogin auth=";
 
 google_research_translator::google_research_translator() {

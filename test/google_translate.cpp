@@ -13,19 +13,21 @@
 #include <string.h>
 
 #include <iostream>
+#include <string>
 
 using namespace std;
 
 void usage(const char *program) {
-	cerr << "Usage:" << program << " -f:auth_key.txt | key  " << endl;
+	cerr << "Usage:" << program << " -f:auth_key.txt | key  " << endl
+			<< "\t\t" << "-testkey" << endl
+			<< "\t\t" << "-langpair input" << endl;
 	exit(-1);
 }
 
 int main(int argc, char **argv) {
-//	google_translator::load_key();
-	google_research_translator& translator = google_research_translator::get_instance();
-	enum { TEST_KEY, UPDATE_KEY };
-//	std::cout << "Hello, world!" << std::endl;
+
+	enum { TEST_KEY, UPDATE_KEY, TRANSLATE};
+
 	if (argc > 1) {
 
 		string token;
@@ -33,6 +35,11 @@ int main(int argc, char **argv) {
 
 		int param;
 		const char *p;
+		const char *langpair;
+
+		google_research_translator& translator = google_research_translator::get_instance();
+
+		string key;
 		for (param = 1; param < argc && *argv[param] == '-'; param++)
 		{
 			if (strncmp(argv[param], "-f", 2) == 0) {
@@ -48,6 +55,10 @@ int main(int argc, char **argv) {
 			else if (strncmp(argv[param], "-testkey", 8) == 0) {
 				type = TEST_KEY;
 			}
+			else if (strncmp(argv[param], "-langpair", 9) == 0) {
+				langpair = argv[param] + 10;
+				type = TRANSLATE;
+			}
 		}
 
 		switch (type) {
@@ -61,12 +72,20 @@ int main(int argc, char **argv) {
 			break;
 		case TEST_KEY:
 			database_mysql::instance().connect();
-			string key = database_mysql::instance().get_google_translate_key();
+			key = database_mysql::instance().get_google_translate_key();
 			translator.set_api_key(key.c_str());
 			translator.test_key();
 			break;
+		case TRANSLATE:
+			translator.initialize(google_translator::LOAD_KEY);
+			translator.set_lang_pair(langpair);
+			cout << translator.translate(argv[argc - 1]);
+			break;
+
 		}
 	}
+	else
+		usage(argv[0]);
 	return 0;
 }
 

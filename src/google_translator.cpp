@@ -172,22 +172,25 @@ bool google_translator::has_valid_key() {
 	return key_status == KEY_VALID;
 }
 
-const char *google_translator::translate(const char *text, long length)
+std::string& google_translator::translate(const char *text, long length)
 {
 	int response_code = 0;
-	string url(query_template);
+	string *url = new string(query_template);
 //		append_lp(url, language_pair);
 //		append_text(url, text);
-	add_text_option(url, text, length);
+	add_text_option(*url, text, length);
 
-	url.append(query_lang_pair_template);
+	url->append(query_lang_pair_template);
 
 //	add_lang_options(url, language_pair);
-	const char *content = webpage_retriever::instance().retrieve(url.c_str(), &response_code);
+	char *url_string = strdup(url->c_str());
+	const char *content = webpage_retriever::instance().retrieve(url_string, &response_code);
+	free(url_string);
+	delete url;
+
 //	response_code = webpage_retriever::instance().get_response_code();
 	if (response_code == 200) {
 		trans = get_translation(content);
-		return trans.c_str();
 	}
 	else  {
 		cerr << content << endl;
@@ -197,8 +200,9 @@ const char *google_translator::translate(const char *text, long length)
 		else{
 			cerr << endl << "HTTP REQUEST: " << endl << url << endl;
 		}
+		trans = "";
 	}
-	return NULL;
+	return trans;
 }
 
 std::string google_translator::get_translation(const char *content)

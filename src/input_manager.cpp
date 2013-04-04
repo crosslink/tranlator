@@ -124,8 +124,8 @@ void input_manager::translate_file(const char *file, long id) {
 				//				string trans = string();
 						cerr << shortened;
 						if (shortened.length() > 0) {
-							const char *trans = translator.translate(shortened.c_str());
-							if (trans == NULL) {
+							std::string& trans = translator.translate(shortened.c_str());
+							if (trans.length() == 0) {
 
 			//							exit(-1);
 								error = true;
